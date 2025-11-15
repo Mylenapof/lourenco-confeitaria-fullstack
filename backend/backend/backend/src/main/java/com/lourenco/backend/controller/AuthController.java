@@ -31,7 +31,12 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<Usuario> register(@RequestBody Usuario usuario) {
-        usuario.setRole("USER");
+        // Se não enviar role, define como USER por padrão
+        if (usuario.getRole() == null || usuario.getRole().isEmpty()) {
+            usuario.setRole("USER");
+        }
+        // Se enviou role, mantém o que foi enviado (ADMIN ou USER)
+        
         Usuario novoUsuario = usuarioService.salvar(usuario); 
         return ResponseEntity.ok(novoUsuario);
     }

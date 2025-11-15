@@ -1,8 +1,8 @@
 package com.lourenco.backend.controller;
-
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.lourenco.backend.model.Produto;
@@ -30,6 +31,7 @@ public class ProdutoController {
         this.produtoService = produtoService;
     }
 
+    // ROTAS SEM PAGINAÇÃO (mantém as existentes)
     @GetMapping
     public List<Produto> listar() {
         return produtoService.listarTodos();
@@ -45,6 +47,45 @@ public class ProdutoController {
         return produtoService.listarDestaques();
     }
 
+    // NOVAS ROTAS COM PAGINAÇÃO
+    @GetMapping("/page")
+    public Page<Produto> listarPaginado(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "nome") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction) {
+        return produtoService.listarTodosPaginado(page, size, sortBy, direction);
+    }
+    
+    @GetMapping("/disponiveis/page")
+    public Page<Produto> listarDisponiveisPaginado(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "nome") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction) {
+        return produtoService.listarDisponiveisPaginado(page, size, sortBy, direction);
+    }
+    
+    @GetMapping("/destaques/page")
+    public Page<Produto> listarDestaquesPaginado(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "nome") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction) {
+        return produtoService.listarDestaquesPaginado(page, size, sortBy, direction);
+    }
+    
+    @GetMapping("/categoria/{categoriaId}/page")
+    public Page<Produto> listarPorCategoriaPaginado(
+            @PathVariable UUID categoriaId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "nome") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction) {
+        return produtoService.listarPorCategoriaPaginado(categoriaId, page, size, sortBy, direction);
+    }
+
+    // ROTAS EXISTENTES (mantém todas)
     @GetMapping("/{id}")
     public Produto buscar(@PathVariable UUID id) {
         return produtoService.buscarPorId(id);

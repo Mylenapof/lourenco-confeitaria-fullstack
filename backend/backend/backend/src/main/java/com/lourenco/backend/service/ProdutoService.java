@@ -3,6 +3,10 @@ package com.lourenco.backend.service;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.lourenco.backend.model.Categoria;
@@ -22,6 +26,7 @@ public class ProdutoService {
         this.categoriaRepository = categoriaRepository;
     }
 
+    // MÉTODOS SEM PAGINAÇÃO (mantém os existentes)
     public List<Produto> listarTodos() {
         return produtoRepository.findAll();
     }
@@ -34,6 +39,32 @@ public class ProdutoService {
         return produtoRepository.findByDestaqueTrue();
     }
 
+    // NOVOS MÉTODOS COM PAGINAÇÃO
+    public Page<Produto> listarTodosPaginado(int page, int size, String sortBy, String direction) {
+        Sort.Direction sortDirection = direction.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
+        return produtoRepository.findAll(pageable);
+    }
+    
+    public Page<Produto> listarDisponiveisPaginado(int page, int size, String sortBy, String direction) {
+        Sort.Direction sortDirection = direction.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
+        return produtoRepository.findByDisponivelTrue(pageable);
+    }
+    
+    public Page<Produto> listarDestaquesPaginado(int page, int size, String sortBy, String direction) {
+        Sort.Direction sortDirection = direction.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
+        return produtoRepository.findByDestaqueTrue(pageable);
+    }
+    
+    public Page<Produto> listarPorCategoriaPaginado(UUID categoriaId, int page, int size, String sortBy, String direction) {
+        Sort.Direction sortDirection = direction.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
+        return produtoRepository.findByCategoriaId(categoriaId, pageable);
+    }
+
+    // MÉTODOS EXISTENTES (mantém todos)
     public Produto salvar(Produto produto) {
         if (produto.getCategoria() != null && produto.getCategoria().getId() != null) {
             Categoria categoriaCompleta = categoriaRepository.findById(produto.getCategoria().getId())
@@ -41,7 +72,6 @@ public class ProdutoService {
             produto.setCategoria(categoriaCompleta);
         }
         
-        // Valores padrão
         if (produto.getDisponivel() == null) {
             produto.setDisponivel(true);
         }

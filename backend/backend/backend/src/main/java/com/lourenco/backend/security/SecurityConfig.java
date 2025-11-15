@@ -28,6 +28,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                     .requestMatchers("/auth/**").permitAll()
                     .requestMatchers("/produtos/**", "/categorias/**").permitAll() // Produtos públicos
+                    .requestMatchers("/files/download/**").permitAll() // ← ADICIONE ESTA LINHA
                     .requestMatchers("/encomendas").permitAll() // Criar encomenda sem login
                     .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

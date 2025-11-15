@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.lourenco.backend.model.Pedido;
@@ -74,4 +76,31 @@ public class PedidoController {
         pedidoService.deletar(id);
         return ResponseEntity.noContent().build();
     }
+    @GetMapping("/page")
+@PreAuthorize("hasRole('ADMIN')")
+public Page<Pedido> listarTodosPaginado(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size,
+        @RequestParam(defaultValue = "dataPedido") String sortBy,
+        @RequestParam(defaultValue = "desc") String direction) {
+    return pedidoService.listarTodosPaginado(page, size, sortBy, direction);
+}
+
+@GetMapping("/usuario/{usuarioId}/page")
+@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+public Page<Pedido> listarPorUsuarioPaginado(
+        @PathVariable UUID usuarioId,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size) {
+    return pedidoService.listarPorUsuarioPaginado(usuarioId, page, size);
+}
+
+@GetMapping("/status/{status}/page")
+@PreAuthorize("hasRole('ADMIN')")
+public Page<Pedido> listarPorStatusPaginado(
+        @PathVariable StatusPedido status,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size) {
+    return pedidoService.listarPorStatusPaginado(status, page, size);
+}
 }
