@@ -103,4 +103,13 @@ public Page<Pedido> listarPorStatusPaginado(
         @RequestParam(defaultValue = "10") int size) {
     return pedidoService.listarPorStatusPaginado(status, page, size);
 }
+@PostMapping("/do-carrinho/usuario/{usuarioId}")
+@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+public Pedido criarPedidoDoCarrinho(
+        @PathVariable UUID usuarioId,
+        @RequestBody Map<String, String> body) {
+    String enderecoEntrega = body.get("enderecoEntrega");
+    String observacoes = body.get("observacoes");
+    return pedidoService.criarPedidoDoCarrinho(usuarioId, enderecoEntrega, observacoes);
+}
 }
