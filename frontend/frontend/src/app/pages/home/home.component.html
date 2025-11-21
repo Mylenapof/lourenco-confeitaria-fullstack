@@ -1,0 +1,54 @@
+<div class="home-page">
+  <!-- Hero Section -->
+  <section class="hero-section pink-gradient-bg">
+    <div class="container">
+      <div class="hero-content">
+        <h1 class="hero-title">Bem-vindo à Lourenço Confeitaria</h1>
+        <p class="hero-subtitle">
+          Doces artesanais feitos com amor e ingredientes selecionados. 
+          Transformamos momentos especiais em memórias deliciosas.
+        </p>
+        <button class="btn-primary" routerLink="/cardapio">
+          Ver Cardápio Completo
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Produtos em Destaque -->
+  <section class="destaques-section">
+    <div class="container">
+      <h2 class="section-title">Nossos Destaques</h2>
+
+      <div class="loading" *ngIf="loading">
+        <p>Carregando produtos...</p>
+      </div>
+
+      <div class="produtos-grid" *ngIf="!loading">
+        <div class="produto-card" *ngFor="let produto of produtosDestaque">
+          <div class="produto-image">
+            <img [src]="produto.imagemUrl" [alt]="produto.nome">
+            <div class="produto-badge" *ngIf="produto.destaque">Destaque</div>
+          </div>
+          
+          <div class="produto-info">
+            <h3 class="produto-nome">{{ produto.nome }}</h3>
+            <p class="produto-ingredientes">{{ produto.ingredientes }}</p>
+            <div class="produto-footer">
+              <span class="produto-preco">R$ {{ produto.preco | number:'1.2-2' }}</span>
+              <button class="btn-outline" [routerLink]="['/produto', produto.id]">
+                Ver Detalhes
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="text-center" style="margin-top: 40px;">
+        <button class="btn-primary" routerLink="/cardapio">
+          Ver Todos os Produtos
+        </button>
+      </div>
+    </div>
+  </section>
+</div>

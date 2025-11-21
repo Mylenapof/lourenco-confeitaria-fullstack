@@ -1,1 +1,64 @@
-/* You can add global styles to this file, and also import other style files */
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+
+:root {
+  --primary-pink: #E91E8C;
+  --light-pink: #FCE4EC;
+  --dark-pink: #C2185B;
+  --text-dark: #333333;
+  --text-light: #666666;
+  --background: #FFF5F8;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', -apple-system, sans-serif;
+  color: var(--text-dark);
+  background: #FFFFFF;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.btn-primary {
+  background: var(--primary-pink);
+  color: white;
+  border: none;
+  padding: 12px 32px;
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+
+  &:hover {
+    background: var(--dark-pink);
+    transform: translateY(-2px);
+  }
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--primary-pink);
+  border: 2px solid var(--primary-pink);
+  padding: 12px 32px;
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+
+  &:hover {
+    background: var(--primary-pink);
+    color: white;
+  }
+}
+
+.pink-gradient-bg {
+  background: linear-gradient(135deg, #FCE4EC 0%, #F8BBD0 100%);
+}

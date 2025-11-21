@@ -1,23 +1,23 @@
 package com.lourenco.backend.controller;
-import java.util.Map;
-
+import com.lourenco.backend.dto.LoginDTO;
+import com.lourenco.backend.dto.RegistroUsuarioDTO;
+import com.lourenco.backend.model.Usuario;
+import com.lourenco.backend.security.JwtUtil;
+import com.lourenco.backend.service.UsuarioService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.lourenco.backend.model.Usuario;
-import com.lourenco.backend.security.JwtUtil;
-import com.lourenco.backend.service.UsuarioService;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
+@CrossOrigin(origins = "*")
 public class AuthController {
 
     @Autowired
@@ -29,32 +29,55 @@ public class AuthController {
     @Autowired
     private UsuarioService usuarioService;
 
+    /**
+     * Registro de novo usuário com validação
+     */
     @PostMapping("/register")
-    public ResponseEntity<Usuario> register(@RequestBody Usuario usuario) {
-        // Se não enviar role, define como USER por padrão
-        if (usuario.getRole() == null || usuario.getRole().isEmpty()) {
-            usuario.setRole("USER");
-        }
-        // Se enviou role, mantém o que foi enviado (ADMIN ou USER)
+    public ResponseEntity<?> register(@Valid @RequestBody RegistroUsuarioDTO dto) {
+        // Converte DTO para entidade
+        Usuario usuario = Usuario.builder()
+                .nome(dto.getNome())
+                .email(dto.getEmail())
+                .senha(dto.getSenha())
+                .cpf(dto.getCpf())
+                .role(dto.getRole() != null && !dto.getRole().isEmpty() ? dto.getRole() : "USER")
+                .telefone(dto.getTelefone())
+                .endereco(dto.getEndereco())
+                .ativo(true)
+                .build();
         
-        Usuario novoUsuario = usuarioService.salvar(usuario); 
-        return ResponseEntity.ok(novoUsuario);
+        Usuario novoUsuario = usuarioService.salvar(usuario);
+        
+        // Remove a senha da resposta
+        novoUsuario.setSenha(null);
+        
+        return ResponseEntity.ok(Map.of(
+            "message", "Usuário cadastrado com sucesso",
+            "usuario", novoUsuario
+        ));
     }
 
+    /**
+     * Login com validação
+     */
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Usuario usuario) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginDTO dto) {
         try {
             Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(usuario.getEmail(), usuario.getSenha())
+                new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getSenha())
             );
 
-            String username = authentication.getName(); 
+            String username = authentication.getName();
             String token = jwtUtil.generateToken(username);
 
-            return ResponseEntity.ok(Map.of("token", token));
+            return ResponseEntity.ok(Map.of(
+                "message", "Login realizado com sucesso",
+                "token", token
+            ));
 
         } catch (AuthenticationException e) {
-            return ResponseEntity.status(401).body(Map.of("error", "Credenciais inválidas."));
+            return ResponseEntity.status(401)
+                    .body(Map.of("error", "Credenciais inválidas"));
         }
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.lourenco.backend.dto.ProdutoDTO;
 import com.lourenco.backend.model.Categoria;
 import com.lourenco.backend.model.Produto;
 import com.lourenco.backend.repository.CategoriaRepository;
@@ -27,41 +28,76 @@ public class ProdutoService {
     }
 
     // MÉTODOS SEM PAGINAÇÃO (mantém os existentes)
-    public List<Produto> listarTodos() {
+    public List listarTodos() {
         return produtoRepository.findAll();
     }
     
-    public List<Produto> listarDisponiveis() {
+    public List listarDisponiveis() {
         return produtoRepository.findByDisponivelTrue();
     }
     
-    public List<Produto> listarDestaques() {
+    public List listarDestaques() {
         return produtoRepository.findByDestaqueTrue();
     }
 
     // NOVOS MÉTODOS COM PAGINAÇÃO
-    public Page<Produto> listarTodosPaginado(int page, int size, String sortBy, String direction) {
+    public Page listarTodosPaginado(int page, int size, String sortBy, String direction) {
         Sort.Direction sortDirection = direction.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
         return produtoRepository.findAll(pageable);
     }
     
-    public Page<Produto> listarDisponiveisPaginado(int page, int size, String sortBy, String direction) {
+    public Page listarDisponiveisPaginado(int page, int size, String sortBy, String direction) {
         Sort.Direction sortDirection = direction.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
         return produtoRepository.findByDisponivelTrue(pageable);
     }
     
-    public Page<Produto> listarDestaquesPaginado(int page, int size, String sortBy, String direction) {
+    public Page listarDestaquesPaginado(int page, int size, String sortBy, String direction) {
         Sort.Direction sortDirection = direction.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
         return produtoRepository.findByDestaqueTrue(pageable);
     }
     
-    public Page<Produto> listarPorCategoriaPaginado(UUID categoriaId, int page, int size, String sortBy, String direction) {
+    public Page listarPorCategoriaPaginado(UUID categoriaId, int page, int size, String sortBy, String direction) {
         Sort.Direction sortDirection = direction.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sortBy));
         return produtoRepository.findByCategoriaId(categoriaId, pageable);
+    }
+
+    // ✅ NOVO: Salvar com DTO validado
+    public Produto salvarComDTO(ProdutoDTO dto) {
+        Categoria categoria = categoriaRepository.findById(dto.getCategoriaId())
+                .orElseThrow(() -> new RuntimeException("Categoria não encontrada"));
+        
+        Produto produto = new Produto();
+        produto.setNome(dto.getNome());
+        produto.setPreco(dto.getPreco());
+        produto.setIngredientes(dto.getIngredientes());
+        produto.setImagemUrl(dto.getImagemUrl());
+        produto.setCategoria(categoria);
+        produto.setDisponivel(dto.getDisponivel() != null ? dto.getDisponivel() : true);
+        produto.setDestaque(dto.getDestaque() != null ? dto.getDestaque() : false);
+        
+        return produtoRepository.save(produto);
+    }
+
+    // ✅ NOVO: Atualizar com DTO validado
+    public Produto atualizarComDTO(UUID id, ProdutoDTO dto) {
+        Produto produto = buscarPorId(id);
+        
+        Categoria categoria = categoriaRepository.findById(dto.getCategoriaId())
+                .orElseThrow(() -> new RuntimeException("Categoria não encontrada"));
+        
+        produto.setNome(dto.getNome());
+        produto.setPreco(dto.getPreco());
+        produto.setIngredientes(dto.getIngredientes());
+        produto.setImagemUrl(dto.getImagemUrl());
+        produto.setCategoria(categoria);
+        produto.setDisponivel(dto.getDisponivel() != null ? dto.getDisponivel() : produto.getDisponivel());
+        produto.setDestaque(dto.getDestaque() != null ? dto.getDestaque() : produto.getDestaque());
+        
+        return produtoRepository.save(produto);
     }
 
     // MÉTODOS EXISTENTES (mantém todos)

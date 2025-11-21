@@ -1,0 +1,27 @@
+export interface Notificacao {
+  id: string;
+  usuario: any;
+  titulo: string;
+  mensagem: string;
+  tipo: TipoNotificacao;
+  lida: boolean;
+  dataHora: string;
+  pedidoId?: string;
+  encomendaId?: string;
+}
+
+export enum TipoNotificacao {
+  NOVO_PEDIDO = 'NOVO_PEDIDO',
+  PEDIDO_CONFIRMADO = 'PEDIDO_CONFIRMADO',
+  PEDIDO_EM_PREPARACAO = 'PEDIDO_EM_PREPARACAO',
+  PEDIDO_PRONTO = 'PEDIDO_PRONTO',
+  PEDIDO_ENTREGUE = 'PEDIDO_ENTREGUE',
+  PEDIDO_CANCELADO = 'PEDIDO_CANCELADO',
+  NOVA_ENCOMENDA = 'NOVA_ENCOMENDA',
+  ENCOMENDA_ORCAMENTO_ENVIADO = 'ENCOMENDA_ORCAMENTO_ENVIADO',
+  ENCOMENDA_APROVADA = 'ENCOMENDA_APROVADA',
+  ENCOMENDA_EM_PRODUCAO = 'ENCOMENDA_EM_PRODUCAO',
+  ENCOMENDA_PRONTA = 'ENCOMENDA_PRONTA',
+  ENCOMENDA_ENTREGUE = 'ENCOMENDA_ENTREGUE',
+  SISTEMA = 'SISTEMA'
+}

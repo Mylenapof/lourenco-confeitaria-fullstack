@@ -1,0 +1,140 @@
+.header {
+  background: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  padding: 15px 0;
+
+  .header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+
+    img {
+      width: 45px;
+      height: 45px;
+      border-radius: 8px;
+    }
+
+    .logo-text {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--primary-pink);
+    }
+  }
+
+  .nav-menu {
+    display: flex;
+    gap: 30px;
+    flex: 1;
+
+    a {
+      text-decoration: none;
+      color: var(--text-dark);
+      font-weight: 500;
+      transition: color 0.3s;
+      position: relative;
+
+      &:hover {
+        color: var(--primary-pink);
+      }
+
+      &.active {
+        color: var(--primary-pink);
+        
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: -5px;
+          left: 0;
+          right: 0;
+          height: 2px;
+          background: var(--primary-pink);
+        }
+      }
+    }
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .search-box {
+    position: relative;
+    
+    input {
+      padding: 10px 40px 10px 15px;
+      border: 1px solid #E0E0E0;
+      border-radius: 25px;
+      width: 250px;
+      outline: none;
+      transition: all 0.3s;
+
+      &:focus {
+        border-color: var(--primary-pink);
+        box-shadow: 0 0 0 3px rgba(233, 30, 140, 0.1);
+      }
+    }
+
+    mat-icon {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-light);
+    }
+  }
+
+  .cart-btn {
+    position: relative;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+
+    mat-icon {
+      color: var(--primary-pink);
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+    }
+
+    .cart-badge {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: var(--primary-pink);
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 10px;
+      min-width: 18px;
+    }
+  }
+
+  .user-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+
+    mat-icon {
+      color: var(--primary-pink);
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+    }
+  }
+}

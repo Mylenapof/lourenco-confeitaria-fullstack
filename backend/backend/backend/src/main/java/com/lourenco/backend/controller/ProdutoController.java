@@ -1,24 +1,16 @@
 package com.lourenco.backend.controller;
-import java.util.List;
-import java.util.UUID;
 
+import com.lourenco.backend.dto.ProdutoDTO;
+import com.lourenco.backend.model.Produto;
+import com.lourenco.backend.service.ProdutoService;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.lourenco.backend.model.Produto;
-import com.lourenco.backend.service.ProdutoService;
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/produtos")
@@ -33,23 +25,23 @@ public class ProdutoController {
 
     // ROTAS SEM PAGINAÇÃO (mantém as existentes)
     @GetMapping
-    public List<Produto> listar() {
+    public List listar() {
         return produtoService.listarTodos();
     }
     
     @GetMapping("/disponiveis")
-    public List<Produto> listarDisponiveis() {
+    public List listarDisponiveis() {
         return produtoService.listarDisponiveis();
     }
     
     @GetMapping("/destaques")
-    public List<Produto> listarDestaques() {
+    public List listarDestaques() {
         return produtoService.listarDestaques();
     }
 
     // NOVAS ROTAS COM PAGINAÇÃO
     @GetMapping("/page")
-    public Page<Produto> listarPaginado(
+    public Page listarPaginado(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "nome") String sortBy,
@@ -58,7 +50,7 @@ public class ProdutoController {
     }
     
     @GetMapping("/disponiveis/page")
-    public Page<Produto> listarDisponiveisPaginado(
+    public Page listarDisponiveisPaginado(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "nome") String sortBy,
@@ -67,7 +59,7 @@ public class ProdutoController {
     }
     
     @GetMapping("/destaques/page")
-    public Page<Produto> listarDestaquesPaginado(
+    public Page listarDestaquesPaginado(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "nome") String sortBy,
@@ -76,7 +68,7 @@ public class ProdutoController {
     }
     
     @GetMapping("/categoria/{categoriaId}/page")
-    public Page<Produto> listarPorCategoriaPaginado(
+    public Page listarPorCategoriaPaginado(
             @PathVariable UUID categoriaId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -91,16 +83,18 @@ public class ProdutoController {
         return produtoService.buscarPorId(id);
     }
 
+    // ✅ ATUALIZADO COM @Valid E DTO
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public Produto salvar(@RequestBody Produto produto) {
-        return produtoService.salvar(produto);
+    public Produto salvar(@Valid @RequestBody ProdutoDTO dto) {
+        return produtoService.salvarComDTO(dto);
     }
 
+    // ✅ ATUALIZADO COM @Valid E DTO
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public Produto atualizar(@PathVariable UUID id, @RequestBody Produto produto) {
-        return produtoService.atualizar(id, produto);
+    public Produto atualizar(@PathVariable UUID id, @Valid @RequestBody ProdutoDTO dto) {
+        return produtoService.atualizarComDTO(id, dto);
     }
     
     @PatchMapping("/{id}/destaque")
@@ -117,7 +111,7 @@ public class ProdutoController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deletar(@PathVariable UUID id) {
+    public ResponseEntity deletar(@PathVariable UUID id) {
         produtoService.deletar(id);
         return ResponseEntity.noContent().build();
     }

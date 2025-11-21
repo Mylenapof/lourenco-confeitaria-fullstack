@@ -1,0 +1,100 @@
+<div class="cadastro-page">
+  <div class="container">
+    <div class="cadastro-card">
+      <div class="cadastro-header">
+        <h1>Minha Conta</h1>
+        <p>Faça login ou crie sua conta</p>
+      </div>
+
+      <div class="tabs">
+        <button class="tab" routerLink="/login">Login</button>
+        <button class="tab active">Cadastro</button>
+      </div>
+
+      <form [formGroup]="cadastroForm" (ngSubmit)="onSubmit()" class="cadastro-form">
+        <div class="form-group">
+          <label>Nome Completo *</label>
+          <div class="input-wrapper">
+            <mat-icon>person</mat-icon>
+            <input type="text" formControlName="nome" placeholder="Seu nome completo">
+          </div>
+          <span class="error" *ngIf="cadastroForm.get('nome')?.invalid && cadastroForm.get('nome')?.touched">
+            Nome deve ter no mínimo 3 caracteres
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label>E-mail *</label>
+          <div class="input-wrapper">
+            <mat-icon>email</mat-icon>
+            <input type="email" formControlName="email" placeholder="seu@email.com">
+          </div>
+          <span class="error" *ngIf="cadastroForm.get('email')?.invalid && cadastroForm.get('email')?.touched">
+            Email inválido
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label>CPF *</label>
+          <div class="input-wrapper">
+            <mat-icon>badge</mat-icon>
+            <input type="text" formControlName="cpf" placeholder="000.000.000-00">
+          </div>
+          <span class="error" *ngIf="cadastroForm.get('cpf')?.invalid && cadastroForm.get('cpf')?.touched">
+            CPF inválido (formato: 000.000.000-00)
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label>Senha *</label>
+          <div class="input-wrapper">
+            <mat-icon>lock</mat-icon>
+            <input 
+              [type]="hidePassword ? 'password' : 'text'"
+              formControlName="senha"
+              placeholder="Mínimo 6 caracteres">
+            <mat-icon class="toggle-password" (click)="hidePassword = !hidePassword">
+              {{ hidePassword ? 'visibility_off' : 'visibility' }}
+            </mat-icon>
+          </div>
+          <span class="error" *ngIf="cadastroForm.get('senha')?.invalid && cadastroForm.get('senha')?.touched">
+            Senha deve ter no mínimo 6 caracteres
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label>Telefone</label>
+          <div class="input-wrapper">
+            <mat-icon>phone</mat-icon>
+            <input type="text" formControlName="telefone" placeholder="(00) 00000-0000">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Endereço</label>
+          <div class="input-wrapper">
+            <mat-icon>home</mat-icon>
+            <input type="text" formControlName="endereco" placeholder="Seu endereço completo">
+          </div>
+        </div>
+
+        <div class="success-message" *ngIf="successMessage">
+          <mat-icon>check_circle</mat-icon>
+          {{ successMessage }}
+        </div>
+
+        <div class="error-message" *ngIf="errorMessage">
+          <mat-icon>error</mat-icon>
+          {{ errorMessage }}
+        </div>
+
+        <button 
+          type="submit" 
+          class="btn-primary btn-block"
+          [disabled]="loading || cadastroForm.invalid">
+          {{ loading ? 'Cadastrando...' : 'Cadastrar' }}
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

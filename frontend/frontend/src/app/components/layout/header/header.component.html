@@ -1,0 +1,65 @@
+<header class="header">
+  <div class="container">
+    <div class="header-content">
+      <!-- Logo -->
+      <div class="logo" routerLink="/">
+        <img src="assets/logo-icon.png" alt="Logo">
+        <span class="logo-text">Lourenço Confeitaria</span>
+      </div>
+
+      <!-- Navigation -->
+      <nav class="nav-menu">
+        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Início</a>
+        <a routerLink="/cardapio" routerLinkActive="active">Cardápio</a>
+        <a routerLink="/encomendas" routerLinkActive="active">Encomendas</a>
+        <a routerLink="/contato" routerLinkActive="active">Contato</a>
+        <a routerLink="/minha-conta" routerLinkActive="active">Minha Conta</a>
+      </nav>
+
+      <!-- Right side -->
+      <div class="header-actions">
+        <!-- Search -->
+        <div class="search-box">
+          <input type="text" placeholder="Buscar doces...">
+          <mat-icon>search</mat-icon>
+        </div>
+
+        <!-- Cart -->
+        <button class="cart-btn" routerLink="/carrinho">
+          <mat-icon>shopping_cart</mat-icon>
+          <span class="cart-badge" *ngIf="totalItens > 0">{{ totalItens }}</span>
+        </button>
+
+        <!-- User -->
+        <button class="user-btn" *ngIf="!isLoggedIn" routerLink="/login">
+          <mat-icon>person</mat-icon>
+        </button>
+
+        <div class="user-menu" *ngIf="isLoggedIn">
+          <button mat-icon-button [matMenuTriggerFor]="menu">
+            <mat-icon>account_circle</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item routerLink="/minha-conta">
+              <mat-icon>person</mat-icon>
+              Minha Conta
+            </button>
+            <button mat-menu-item routerLink="/pedidos">
+              <mat-icon>receipt</mat-icon>
+              Meus Pedidos
+            </button>
+            <button mat-menu-item *ngIf="isAdmin" routerLink="/admin">
+              <mat-icon>dashboard</mat-icon>
+              Admin
+            </button>
+            <mat-divider></mat-divider>
+            <button mat-menu-item (click)="logout()">
+              <mat-icon>exit_to_app</mat-icon>
+              Sair
+            </button>
+          </mat-menu>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>

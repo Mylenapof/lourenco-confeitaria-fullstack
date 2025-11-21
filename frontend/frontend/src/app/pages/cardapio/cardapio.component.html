@@ -1,0 +1,80 @@
+<div class="cardapio-page">
+  <!-- Header -->
+  <section class="cardapio-header pink-gradient-bg">
+    <div class="container">
+      <h1>Nosso Cardápio</h1>
+      <p>Explore nossos deliciosos produtos artesanais</p>
+    </div>
+  </section>
+
+  <!-- Filtros -->
+  <section class="filtros-section">
+    <div class="container">
+      <div class="filtros-chips">
+        <button 
+          mat-flat-button 
+          [class.active]="!categoriaSelected"
+          (click)="filtrarPorCategoria(null)">
+          Todo o Cardápio
+        </button>
+        
+        <button 
+          mat-flat-button
+          *ngFor="let categoria of categorias"
+          [class.active]="categoriaSelected === categoria.id"
+          (click)="filtrarPorCategoria(categoria.id)">
+          {{ categoria.nome }}
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Produtos -->
+  <section class="produtos-section">
+    <div class="container">
+      <div class="loading" *ngIf="loading">
+        <p>Carregando produtos...</p>
+      </div>
+
+      <div class="produtos-grid" *ngIf="!loading && produtosFiltrados.length > 0">
+        <div class="produto-card" *ngFor="let produto of produtosFiltrados">
+          <div class="produto-image" [routerLink]="['/produto', produto.id]">
+            <img [src]="produto.imagemUrl" [alt]="produto.nome">
+            
+            <div class="badges">
+              <span class="badge badge-destaque" *ngIf="produto.destaque">
+                <mat-icon>star</mat-icon>
+              </span>
+            </div>
+
+            <div class="produto-preco-tag">
+              R$ {{ produto.preco | number:'1.2-2' }}
+            </div>
+          </div>
+          
+          <div class="produto-info">
+            <span class="produto-categoria">{{ produto.categoria.nome }}</span>
+            <h3 class="produto-nome">{{ produto.nome }}</h3>
+            <p class="produto-ingredientes">
+              <strong>Ingredientes:</strong> {{ produto.ingredientes }}
+            </p>
+            
+            <button class="btn-primary btn-block" [routerLink]="['/produto', produto.id]">
+              <mat-icon>add_shopping_cart</mat-icon>
+              Adicionar ao Carrinho
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="empty-state" *ngIf="!loading && produtosFiltrados.length === 0">
+        <mat-icon>search_off</mat-icon>
+        <h3>Nenhum produto encontrado</h3>
+        <p>Tente selecionar outra categoria</p>
+        <button class="btn-primary" (click)="filtrarPorCategoria(null)">
+          Ver Todos os Produtos
+        </button>
+      </div>
+    </div>
+  </section>
+</div>

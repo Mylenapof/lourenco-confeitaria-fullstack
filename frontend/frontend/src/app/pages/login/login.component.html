@@ -1,0 +1,64 @@
+<div class="login-page">
+  <div class="container">
+    <div class="login-card">
+      <div class="login-header">
+        <h1>Minha Conta</h1>
+        <p>Faça login ou crie sua conta</p>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active">Login</button>
+        <button class="tab" routerLink="/cadastro">Cadastro</button>
+      </div>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+        <div class="form-group">
+          <label>E-mail</label>
+          <div class="input-wrapper">
+            <mat-icon>email</mat-icon>
+            <input 
+              type="email" 
+              formControlName="email"
+              placeholder="seu@email.com">
+          </div>
+          <span class="error" *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+            Email inválido
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label>Senha</label>
+          <div class="input-wrapper">
+            <mat-icon>lock</mat-icon>
+            <input 
+              [type]="hidePassword ? 'password' : 'text'"
+              formControlName="senha"
+              placeholder="••••••••">
+            <mat-icon class="toggle-password" (click)="hidePassword = !hidePassword">
+              {{ hidePassword ? 'visibility_off' : 'visibility' }}
+            </mat-icon>
+          </div>
+          <span class="error" *ngIf="loginForm.get('senha')?.invalid && loginForm.get('senha')?.touched">
+            Senha deve ter no mínimo 6 caracteres
+          </span>
+        </div>
+
+        <div class="error-message" *ngIf="errorMessage">
+          <mat-icon>error</mat-icon>
+          {{ errorMessage }}
+        </div>
+
+        <button 
+          type="submit" 
+          class="btn-primary btn-block"
+          [disabled]="loading || loginForm.invalid">
+          {{ loading ? 'Entrando...' : 'Entrar' }}
+        </button>
+
+        <div class="forgot-password">
+          <a href="#">Esqueceu sua senha? Recuperar senha</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
