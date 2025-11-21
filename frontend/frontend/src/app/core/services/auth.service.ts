@@ -12,6 +12,7 @@ import { LoginRequest, LoginResponse, RegistroRequest, Usuario } from '@models/u
 })
 export class AuthService {
   private apiUrl = `${environment.apiUrl}/auth`;
+  private usuariosUrl = `${environment.apiUrl}/usuarios`;
   private currentUserSubject = new BehaviorSubject<Usuario | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
   private platformId = inject(PLATFORM_ID);
@@ -86,20 +87,16 @@ export class AuthService {
     
     const token = this.getToken();
     if (token && this.isAuthenticated()) {
-      try {
-        const decoded: any = jwtDecode(token);
-        const user: Usuario = {
-          id: decoded.sub,
-          nome: decoded.sub,
-          email: decoded.sub,
-          role: decoded.authorities?.[0]?.replace('ROLE_', '') || 'USER',
-          ativo: true
-        };
-        this.currentUserSubject.next(user);
-      } catch (error) {
-        console.error('Erro ao decodificar token:', error);
-        this.logout();
-      }
+      // Buscar dados completos do usuário
+      this.http.get<Usuario>(`${this.usuariosUrl}/me`).subscribe({
+        next: (usuario) => {
+          this.currentUserSubject.next(usuario);
+        },
+        error: (err) => {
+          console.error('Erro ao carregar usuário:', err);
+          this.logout();
+        }
+      });
     }
   }
 }

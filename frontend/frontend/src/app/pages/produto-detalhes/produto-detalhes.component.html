@@ -1,1 +1,84 @@
-<p>produto-detalhes works!</p>
+<div class="produto-detalhes-page">
+  <div class="container">
+    <!-- Loading -->
+    <div class="loading" *ngIf="loading">
+      <p>Carregando produto...</p>
+    </div>
+
+    <!-- Produto -->
+    <div class="produto-content" *ngIf="!loading && produto">
+      <button class="btn-voltar" routerLink="/cardapio">
+        <mat-icon>arrow_back</mat-icon>
+        Voltar ao Cardápio
+      </button>
+
+      <div class="produto-grid">
+        <!-- Imagem -->
+        <div class="produto-imagem">
+          <img [src]="produto.imagemUrl" [alt]="produto.nome">
+          <span class="badge-destaque" *ngIf="produto.destaque">
+            <mat-icon>star</mat-icon>
+            Destaque
+          </span>
+        </div>
+
+        <!-- Informações -->
+        <div class="produto-info">
+          <span class="produto-categoria">{{ produto.categoria.nome }}</span>
+          <h1 class="produto-nome">{{ produto.nome }}</h1>
+          
+          <div class="produto-preco">
+            <span class="preco-label">Preço:</span>
+            <span class="preco-valor">R$ {{ produto.preco | number:'1.2-2' }}</span>
+          </div>
+
+          <div class="produto-ingredientes">
+            <h3><mat-icon>restaurant</mat-icon> Ingredientes</h3>
+            <p>{{ produto.ingredientes }}</p>
+          </div>
+
+          <div class="produto-status">
+            <div class="status-badge" [class.disponivel]="produto.disponivel" [class.indisponivel]="!produto.disponivel">
+              <mat-icon>{{ produto.disponivel ? 'check_circle' : 'cancel' }}</mat-icon>
+              {{ produto.disponivel ? 'Disponível' : 'Indisponível' }}
+            </div>
+          </div>
+
+          <div class="produto-acoes" *ngIf="produto.disponivel">
+            <div class="quantidade-selector">
+              <label>Quantidade:</label>
+              <div class="qty-controls">
+                <button class="btn-qty" (click)="diminuirQuantidade()" [disabled]="quantidade <= 1">
+                  <mat-icon>remove</mat-icon>
+                </button>
+                <span class="qty-value">{{ quantidade }}</span>
+                <button class="btn-qty" (click)="aumentarQuantidade()">
+                  <mat-icon>add</mat-icon>
+                </button>
+              </div>
+            </div>
+
+            <button 
+              class="btn-primary btn-block"
+              (click)="adicionarAoCarrinho()"
+              [disabled]="adicionandoCarrinho">
+              <mat-icon>shopping_cart</mat-icon>
+              {{ adicionandoCarrinho ? 'Adicionando...' : 'Adicionar ao Carrinho' }}
+            </button>
+
+            <div class="total-preview">
+              <span>Total:</span>
+              <strong>R$ {{ (produto.preco * quantidade) | number:'1.2-2' }}</strong>
+            </div>
+          </div>
+
+          <div class="produto-indisponivel" *ngIf="!produto.disponivel">
+            <mat-icon>info</mat-icon>
+            <p>Este produto está temporariamente indisponível.</p>
+            <button class="btn-outline" routerLink="/cardapio">Ver Outros Produtos</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

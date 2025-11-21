@@ -38,9 +38,9 @@ export class CadastroComponent {
     this.cadastroForm = this.fb.group({
       nome: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
-      cpf: ['', [Validators.required, Validators.pattern(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/)]],
+      cpf: ['', [Validators.required]], // REMOVIDO PATTERN
       senha: ['', [Validators.required, Validators.minLength(6)]],
-      telefone: ['', [Validators.pattern(/^\(\d{2}\) \d{4,5}-\d{4}$/)]],
+      telefone: [''], // REMOVIDO VALIDAÇÃO
       endereco: ['']
     });
   }
@@ -53,16 +53,23 @@ export class CadastroComponent {
 
       this.authService.register(this.cadastroForm.value).subscribe({
         next: (response) => {
+          console.log('Cadastro OK:', response);
           this.successMessage = 'Cadastro realizado com sucesso!';
+          this.loading = false;
           setTimeout(() => {
             this.router.navigate(['/login']);
           }, 2000);
         },
         error: (error) => {
           console.error('Erro no cadastro:', error);
-          this.errorMessage = error.error?.message || 'Erro ao realizar cadastro';
+          this.errorMessage = error.error?.message || 'Erro ao realizar cadastro. Verifique os dados.';
           this.loading = false;
         }
+      });
+    } else {
+      // Marcar todos os campos como touched para mostrar erros
+      Object.keys(this.cadastroForm.controls).forEach(key => {
+        this.cadastroForm.get(key)?.markAsTouched();
       });
     }
   }

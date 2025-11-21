@@ -62,3 +62,27 @@ body {
 .pink-gradient-bg {
   background: linear-gradient(135deg, #FCE4EC 0%, #F8BBD0 100%);
 }
+
+// Snackbar customizado
+.snackbar-success {
+  background: #4CAF50 !important;
+  color: white !important;
+  
+  .mat-mdc-snack-bar-label {
+    color: white !important;
+  }
+  
+  .mat-mdc-button {
+    color: white !important;
+  }
+}
+
+.snackbar-error {
+  background: #F44336 !important;
+  color: white !important;
+}
+
+.snackbar-warning {
+  background: #FF9800 !important;
+  color: white !important;
+}

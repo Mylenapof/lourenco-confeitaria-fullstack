@@ -1,1 +1,97 @@
-<p>carrinho works!</p>
+<div class="carrinho-page">
+  <div class="container">
+    <h1 class="page-title">Meu Carrinho</h1>
+
+    <!-- Loading -->
+    <div class="loading" *ngIf="loading">
+      <p>Carregando carrinho...</p>
+    </div>
+
+    <!-- Carrinho Vazio -->
+    <div class="carrinho-vazio" *ngIf="!loading && (!carrinho || carrinho.itens.length === 0)">
+      <div class="empty-icon">
+        <mat-icon>shopping_cart</mat-icon>
+      </div>
+      <h2>Seu Carrinho está Vazio</h2>
+      <p>Adicione alguns deliciosos doces ao seu carrinho!</p>
+      <button class="btn-primary" routerLink="/cardapio">
+        Ver Cardápio
+      </button>
+    </div>
+
+    <!-- Carrinho com Itens -->
+    <div class="carrinho-content" *ngIf="!loading && carrinho && carrinho.itens.length > 0">
+      <div class="carrinho-items">
+        <div class="item-card" *ngFor="let item of carrinho.itens">
+          <div class="item-image">
+            <img [src]="item.produtoImagemUrl" [alt]="item.produtoNome">
+            <span class="badge-indisponivel" *ngIf="!item.produtoDisponivel">
+              Indisponível
+            </span>
+          </div>
+
+          <div class="item-info">
+            <h3 class="item-nome">{{ item.produtoNome }}</h3>
+            <p class="item-preco">R$ {{ item.precoUnitario | number:'1.2-2' }} / unidade</p>
+          </div>
+
+          <div class="item-quantidade">
+            <button 
+              class="btn-qty" 
+              (click)="atualizarQuantidade(item.itemId, item.quantidade - 1)"
+              [disabled]="item.quantidade <= 1">
+              <mat-icon>remove</mat-icon>
+            </button>
+            <span class="qty-value">{{ item.quantidade }}</span>
+            <button 
+              class="btn-qty" 
+              (click)="atualizarQuantidade(item.itemId, item.quantidade + 1)">
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
+
+          <div class="item-subtotal">
+            <p class="subtotal-label">Subtotal</p>
+            <p class="subtotal-value">R$ {{ item.subtotal | number:'1.2-2' }}</p>
+          </div>
+
+          <button class="btn-remove" (click)="removerItem(item.itemId)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <!-- Resumo -->
+      <div class="carrinho-resumo">
+        <div class="resumo-card">
+          <h2>Resumo do Pedido</h2>
+
+          <div class="resumo-item">
+            <span>Total de Itens:</span>
+            <strong>{{ carrinho.totalItens }}</strong>
+          </div>
+
+          <div class="resumo-divider"></div>
+
+          <div class="resumo-total">
+            <span>Total:</span>
+            <strong class="total-value">R$ {{ carrinho.valorTotal | number:'1.2-2' }}</strong>
+          </div>
+
+          <button class="btn-primary btn-block" (click)="finalizarPedido()">
+            Finalizar Pedido
+          </button>
+
+          <button class="btn-outline btn-block" routerLink="/cardapio">
+            Continuar Comprando
+          </button>
+
+          <button class="btn-limpar" (click)="limparCarrinho()">
+            <mat-icon>delete_sweep</mat-icon>
+            Limpar Carrinho
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

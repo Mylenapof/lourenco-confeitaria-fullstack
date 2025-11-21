@@ -16,7 +16,7 @@
           <label>Nome Completo *</label>
           <div class="input-wrapper">
             <mat-icon>person</mat-icon>
-            <input type="text" formControlName="nome" placeholder="Seu nome completo">
+            <input type="text" formControlName="nome" placeholder="João Silva">
           </div>
           <span class="error" *ngIf="cadastroForm.get('nome')?.invalid && cadastroForm.get('nome')?.touched">
             Nome deve ter no mínimo 3 caracteres
@@ -27,7 +27,7 @@
           <label>E-mail *</label>
           <div class="input-wrapper">
             <mat-icon>email</mat-icon>
-            <input type="email" formControlName="email" placeholder="seu@email.com">
+            <input type="email" formControlName="email" placeholder="joao@email.com">
           </div>
           <span class="error" *ngIf="cadastroForm.get('email')?.invalid && cadastroForm.get('email')?.touched">
             Email inválido
@@ -38,11 +38,12 @@
           <label>CPF *</label>
           <div class="input-wrapper">
             <mat-icon>badge</mat-icon>
-            <input type="text" formControlName="cpf" placeholder="000.000.000-00">
+            <input type="text" formControlName="cpf" placeholder="123.456.789-09">
           </div>
           <span class="error" *ngIf="cadastroForm.get('cpf')?.invalid && cadastroForm.get('cpf')?.touched">
-            CPF inválido (formato: 000.000.000-00)
+            CPF é obrigatório
           </span>
+          <small style="color: #666; font-size: 12px;">Formato: 123.456.789-09</small>
         </div>
 
         <div class="form-group">
@@ -63,18 +64,19 @@
         </div>
 
         <div class="form-group">
-          <label>Telefone</label>
+          <label>Telefone (Opcional)</label>
           <div class="input-wrapper">
             <mat-icon>phone</mat-icon>
-            <input type="text" formControlName="telefone" placeholder="(00) 00000-0000">
+            <input type="text" formControlName="telefone" placeholder="(11) 98765-4321">
           </div>
+          <small style="color: #666; font-size: 12px;">Formato: (11) 98765-4321</small>
         </div>
 
         <div class="form-group">
-          <label>Endereço</label>
+          <label>Endereço (Opcional)</label>
           <div class="input-wrapper">
             <mat-icon>home</mat-icon>
-            <input type="text" formControlName="endereco" placeholder="Seu endereço completo">
+            <input type="text" formControlName="endereco" placeholder="Rua Exemplo, 123">
           </div>
         </div>
 
@@ -91,7 +93,7 @@
         <button 
           type="submit" 
           class="btn-primary btn-block"
-          [disabled]="loading || cadastroForm.invalid">
+          [disabled]="loading">
           {{ loading ? 'Cadastrando...' : 'Cadastrar' }}
         </button>
       </form>
