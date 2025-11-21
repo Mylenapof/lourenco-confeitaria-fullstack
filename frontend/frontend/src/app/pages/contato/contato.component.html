@@ -1,1 +1,134 @@
-<p>contato works!</p>
+<div class="contato-page">
+  <!-- Header -->
+  <section class="contato-header pink-gradient-bg">
+    <div class="container">
+      <h1>Entre em Contato</h1>
+      <p>Estamos aqui para atender você e tornar seus momentos ainda mais especiais</p>
+    </div>
+  </section>
+
+  <!-- Conteúdo -->
+  <section class="contato-content">
+    <div class="container">
+      <div class="contato-grid">
+        
+        <!-- Cards de Contato -->
+        <div class="contato-cards">
+
+          <!-- Telefone -->
+          <div class="contato-card">
+            <div class="icon-wrapper">
+              <mat-icon>phone</mat-icon>
+            </div>
+            <h3>Telefone</h3>
+            <p class="info-destaque">{{ contatos.telefone }}</p>
+            <p class="info-subtitle">Ligue para fazer seu pedido</p>
+
+            <!-- CORRIGIDO -->
+            <a [href]="getTelefoneLimpo()" class="btn-action">
+              <mat-icon>call</mat-icon>
+              Ligar Agora
+            </a>
+          </div>
+
+          <!-- Email -->
+          <div class="contato-card">
+            <div class="icon-wrapper">
+              <mat-icon>email</mat-icon>
+            </div>
+            <h3>E-mail</h3>
+            <p class="info-destaque">{{ contatos.email }}</p>
+            <p class="info-subtitle">Envie sua mensagem</p>
+
+            <!-- CORRIGIDO -->
+            <a [href]="getEmailLink()" class="btn-action">
+              <mat-icon>send</mat-icon>
+              Enviar E-mail
+            </a>
+          </div>
+
+          <!-- Endereço -->
+          <div class="contato-card">
+            <div class="icon-wrapper">
+              <mat-icon>location_on</mat-icon>
+            </div>
+            <h3>Endereço</h3>
+            <p class="info-destaque">{{ contatos.endereco }}</p>
+            <p class="info-subtitle">Visite nossa loja</p>
+            <a href="https://maps.google.com" target="_blank" class="btn-action">
+              <mat-icon>map</mat-icon>
+              Ver no Mapa
+            </a>
+          </div>
+
+          <!-- Horário -->
+          <div class="contato-card">
+            <div class="icon-wrapper">
+              <mat-icon>schedule</mat-icon>
+            </div>
+            <h3>Horário de Funcionamento</h3>
+            <p class="info-destaque">{{ contatos.horario }}</p>
+            <p class="info-subtitle">Domingo: Fechado</p>
+          </div>
+
+          <!-- Instagram -->
+          <div class="contato-card social">
+            <div class="icon-wrapper instagram">
+              <mat-icon>camera_alt</mat-icon>
+            </div>
+            <h3>Instagram</h3>
+            <p class="info-destaque">{{ contatos.instagram }}</p>
+            <p class="info-subtitle">Siga para ver novidades</p>
+            <a href="https://instagram.com/lourencoconfeitaria" target="_blank" class="btn-action instagram">
+              <mat-icon>launch</mat-icon>
+              Seguir no Instagram
+            </a>
+          </div>
+
+          <!-- Facebook -->
+          <div class="contato-card social">
+            <div class="icon-wrapper facebook">
+              <mat-icon>thumb_up</mat-icon>
+            </div>
+            <h3>Facebook</h3>
+            <p class="info-destaque">{{ contatos.facebook }}</p>
+            <p class="info-subtitle">Curta nossa página</p>
+            <a href="https://facebook.com/lourencoconfeitaria" target="_blank" class="btn-action facebook">
+              <mat-icon>launch</mat-icon>
+              Curtir no Facebook
+            </a>
+          </div>
+
+        </div>
+
+        <!-- Mapa -->
+        <div class="mapa-section">
+          <div class="mapa-placeholder">
+            <mat-icon>map</mat-icon>
+            <h3>Localização</h3>
+            <p>Rua das Flores, 123<br>Centro - São Paulo, SP<br>CEP: 01234-567</p>
+            <button class="btn-primary">
+              <mat-icon>directions</mat-icon>
+              Como Chegar
+            </button>
+          </div>
+
+          <!-- Informações adicionais -->
+          <div class="info-adicional">
+            <h3>
+              <mat-icon>info</mat-icon>
+              Informações Importantes
+            </h3>
+            <ul>
+              <li><mat-icon>check_circle</mat-icon> Encomendas com prazo mínimo de 3 dias</li>
+              <li><mat-icon>check_circle</mat-icon> Aceitamos cartão de crédito e PIX</li>
+              <li><mat-icon>check_circle</mat-icon> Entregamos em toda região metropolitana</li>
+              <li><mat-icon>check_circle</mat-icon> Faça seu orçamento sem compromisso</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+</div>

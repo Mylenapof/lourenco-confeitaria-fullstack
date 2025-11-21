@@ -1,0 +1,400 @@
+.minha-conta-page {
+  min-height: 100vh;
+  background: #FAFAFA;
+  padding: 40px 0;
+
+  .page-header {
+    background: white;
+    border-radius: 16px;
+    padding: 30px;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+
+      .avatar {
+        width: 80px;
+        height: 80px;
+        background: var(--light-pink);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        mat-icon {
+          font-size: 48px;
+          width: 48px;
+          height: 48px;
+          color: var(--primary-pink);
+        }
+      }
+
+      .user-details {
+        h1 {
+          font-size: 28px;
+          font-weight: 700;
+          color: var(--text-dark);
+          margin-bottom: 5px;
+        }
+
+        p {
+          color: var(--text-light);
+          font-size: 16px;
+        }
+      }
+    }
+
+    .btn-logout {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      background: transparent;
+      border: 2px solid #F44336;
+      color: #F44336;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 600;
+
+      &:hover {
+        background: #F44336;
+        color: white;
+      }
+
+      mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+    }
+  }
+
+  .conta-tabs {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    overflow: hidden;
+
+    .tab-content {
+      padding: 30px;
+
+      .loading {
+        text-align: center;
+        padding: 60px 0;
+        color: var(--text-light);
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 80px 40px;
+
+        mat-icon {
+          font-size: 80px;
+          width: 80px;
+          height: 80px;
+          color: #E0E0E0;
+          margin-bottom: 20px;
+        }
+
+        h3 {
+          font-size: 24px;
+          color: var(--text-dark);
+          margin-bottom: 10px;
+        }
+
+        p {
+          color: var(--text-light);
+          margin-bottom: 30px;
+        }
+      }
+
+      // Dados Pessoais
+      .info-card {
+        h2 {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          font-size: 22px;
+          font-weight: 700;
+          color: var(--text-dark);
+          margin-bottom: 30px;
+
+          mat-icon {
+            color: var(--primary-pink);
+          }
+        }
+
+        .info-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 25px;
+          margin-bottom: 30px;
+
+          .info-item {
+            &.full-width {
+              grid-column: 1 / -1;
+            }
+
+            label {
+              display: block;
+              font-size: 13px;
+              font-weight: 600;
+              color: var(--text-light);
+              text-transform: uppercase;
+              margin-bottom: 8px;
+            }
+
+            p {
+              font-size: 16px;
+              color: var(--text-dark);
+              font-weight: 500;
+            }
+          }
+        }
+
+        .info-actions {
+          display: flex;
+          gap: 15px;
+          padding-top: 20px;
+          border-top: 2px solid #F0F0F0;
+
+          button {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+          }
+        }
+      }
+
+      // Pedidos
+      .pedidos-list {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+
+        .pedido-card {
+          border: 2px solid #E0E0E0;
+          border-radius: 12px;
+          padding: 20px;
+          transition: all 0.3s;
+
+          &:hover {
+            border-color: var(--primary-pink);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+          }
+
+          .pedido-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+
+            .pedido-info {
+              h3 {
+                font-size: 18px;
+                font-weight: 700;
+                color: var(--text-dark);
+                margin-bottom: 5px;
+              }
+
+              .pedido-data {
+                font-size: 14px;
+                color: var(--text-light);
+              }
+            }
+          }
+
+          .pedido-items {
+            background: #FAFAFA;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+
+            .item-resumo {
+              display: flex;
+              align-items: center;
+              gap: 12px;
+              padding: 8px 0;
+
+              .item-qtd {
+                font-weight: 700;
+                color: var(--primary-pink);
+              }
+
+              .item-nome {
+                flex: 1;
+                color: var(--text-dark);
+              }
+
+              .item-preco {
+                font-weight: 600;
+                color: var(--text-dark);
+              }
+            }
+          }
+
+          .pedido-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 2px solid #E0E0E0;
+
+            .pedido-total {
+              span {
+                color: var(--text-light);
+                margin-right: 10px;
+              }
+
+              strong {
+                font-size: 24px;
+                color: var(--primary-pink);
+              }
+            }
+          }
+        }
+      }
+
+      // Encomendas
+      .encomendas-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 20px;
+
+        .encomenda-card {
+          border: 2px solid #E0E0E0;
+          border-radius: 12px;
+          padding: 20px;
+          transition: all 0.3s;
+
+          &:hover {
+            border-color: var(--primary-pink);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+          }
+
+          .encomenda-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+
+            .encomenda-info {
+              h3 {
+                font-size: 18px;
+                font-weight: 700;
+                color: var(--text-dark);
+                margin-bottom: 5px;
+              }
+
+              .encomenda-data {
+                font-size: 14px;
+                color: var(--text-light);
+              }
+            }
+          }
+
+          .encomenda-detalhes {
+            background: #FAFAFA;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+
+            p {
+              font-size: 14px;
+              margin-bottom: 8px;
+              color: var(--text-light);
+
+              strong {
+                color: var(--text-dark);
+              }
+
+              &:last-child {
+                margin-bottom: 0;
+              }
+            }
+          }
+
+          .encomenda-footer {
+            padding-top: 15px;
+            border-top: 2px solid #E0E0E0;
+          }
+        }
+      }
+    }
+  }
+
+  // Status Badges
+  .status-badge {
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+
+    &.status-pendente {
+      background: #FFF3E0;
+      color: #F57C00;
+    }
+
+    &.status-confirmado, &.status-aprovado {
+      background: #E3F2FD;
+      color: #1976D2;
+    }
+
+    &.status-preparacao {
+      background: #F3E5F5;
+      color: #7B1FA2;
+    }
+
+    &.status-pronto {
+      background: #E8F5E9;
+      color: #388E3C;
+    }
+
+    &.status-entregue {
+      background: #C8E6C9;
+      color: #2E7D32;
+    }
+
+    &.status-cancelado {
+      background: #FFEBEE;
+      color: #C62828;
+    }
+
+    &.status-orcamento {
+      background: #FFF9C4;
+      color: #F57F17;
+    }
+  }
+
+  .btn-sm {
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+
+    .user-info {
+      flex-direction: column;
+    }
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .encomendas-list {
+    grid-template-columns: 1fr !important;
+  }
+}

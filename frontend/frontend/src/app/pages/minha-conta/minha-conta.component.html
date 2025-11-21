@@ -1,1 +1,182 @@
-<p>minha-conta works!</p>
+<div class="minha-conta-page">
+  <div class="container">
+    <!-- Header -->
+    <div class="page-header">
+      <div class="user-info">
+        <div class="avatar">
+          <mat-icon>person</mat-icon>
+        </div>
+        <div class="user-details">
+          <h1>{{ usuario?.nome }}</h1>
+          <p>{{ usuario?.email }}</p>
+        </div>
+      </div>
+      <button class="btn-logout" (click)="logout()">
+        <mat-icon>logout</mat-icon>
+        Sair
+      </button>
+    </div>
+
+    <!-- Tabs -->
+    <mat-tab-group class="conta-tabs">
+      
+      <!-- Dados Pessoais -->
+      <mat-tab label="Dados Pessoais">
+        <div class="tab-content">
+          <div class="info-card">
+            <h2>
+              <mat-icon>person</mat-icon>
+              Informações Pessoais
+            </h2>
+
+            <div class="info-grid">
+              <div class="info-item">
+                <label>Nome Completo</label>
+                <p>{{ usuario?.nome }}</p>
+              </div>
+
+              <div class="info-item">
+                <label>E-mail</label>
+                <p>{{ usuario?.email }}</p>
+              </div>
+
+              <div class="info-item">
+                <label>CPF</label>
+                <p>{{ usuario?.cpf || 'Não informado' }}</p>
+              </div>
+
+              <div class="info-item">
+                <label>Telefone</label>
+                <p>{{ usuario?.telefone || 'Não informado' }}</p>
+              </div>
+
+              <div class="info-item full-width">
+                <label>Endereço</label>
+                <p>{{ usuario?.endereco || 'Não informado' }}</p>
+              </div>
+            </div>
+
+            <div class="info-actions">
+              <button class="btn-outline">
+                <mat-icon>edit</mat-icon>
+                Editar Informações
+              </button>
+              <button class="btn-outline">
+                <mat-icon>lock</mat-icon>
+                Alterar Senha
+              </button>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- Meus Pedidos -->
+      <mat-tab label="Meus Pedidos">
+        <div class="tab-content">
+          
+          <div class="loading" *ngIf="loadingPedidos">
+            <p>Carregando pedidos...</p>
+          </div>
+
+          <div class="empty-state" *ngIf="!loadingPedidos && pedidos.length === 0">
+            <mat-icon>shopping_bag</mat-icon>
+            <h3>Nenhum pedido encontrado</h3>
+            <p>Você ainda não realizou nenhum pedido</p>
+            <button class="btn-primary" routerLink="/cardapio">
+              Fazer Pedido
+            </button>
+          </div>
+
+          <div class="pedidos-list" *ngIf="!loadingPedidos && pedidos.length > 0">
+            <div class="pedido-card" *ngFor="let pedido of pedidos">
+              <div class="pedido-header">
+                <div class="pedido-info">
+                  <h3>Pedido #{{ pedido.id.substring(0, 8) }}</h3>
+                  <p class="pedido-data">{{ pedido.dataPedido | date:'dd/MM/yyyy HH:mm' }}</p>
+                </div>
+                <span class="status-badge" [ngClass]="getStatusClass(pedido.status)">
+                  {{ getStatusTexto(pedido.status) }}
+                </span>
+              </div>
+
+              <div class="pedido-items">
+                <div class="item-resumo" *ngFor="let item of pedido.itens">
+                  <span class="item-qtd">{{ item.quantidade }}x</span>
+                  <span class="item-nome">{{ item.nomeProduto }}</span>
+                  <span class="item-preco">R$ {{ item.subtotal | number:'1.2-2' }}</span>
+                </div>
+              </div>
+
+              <div class="pedido-footer">
+                <div class="pedido-total">
+                  <span>Total:</span>
+                  <strong>R$ {{ pedido.valorTotal | number:'1.2-2' }}</strong>
+                </div>
+                <button class="btn-outline btn-sm">
+                  <mat-icon>visibility</mat-icon>
+                  Ver Detalhes
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- Minhas Encomendas -->
+      <mat-tab label="Minhas Encomendas">
+        <div class="tab-content">
+          
+          <div class="loading" *ngIf="loadingEncomendas">
+            <p>Carregando encomendas...</p>
+          </div>
+
+          <div class="empty-state" *ngIf="!loadingEncomendas && encomendas.length === 0">
+            <mat-icon>cake</mat-icon>
+            <h3>Nenhuma encomenda encontrada</h3>
+            <p>Você ainda não fez nenhuma encomenda personalizada</p>
+            <button class="btn-primary" routerLink="/encomendas">
+              Fazer Encomenda
+            </button>
+          </div>
+
+          <div class="encomendas-list" *ngIf="!loadingEncomendas && encomendas.length > 0">
+            <div class="encomenda-card" *ngFor="let encomenda of encomendas">
+              <div class="encomenda-header">
+                <div class="encomenda-info">
+                  <h3>{{ encomenda.tipoProduto }}</h3>
+                  <p class="encomenda-data">Entrega: {{ encomenda.dataEntrega | date:'dd/MM/yyyy' }}</p>
+                </div>
+                <span class="status-badge" [ngClass]="getStatusClass(encomenda.status)">
+                  {{ getStatusTexto(encomenda.status) }}
+                </span>
+              </div>
+
+              <div class="encomenda-detalhes">
+                <p *ngIf="encomenda.tamanho">
+                  <strong>Tamanho:</strong> {{ encomenda.tamanho }}
+                </p>
+                <p *ngIf="encomenda.sabor">
+                  <strong>Sabor:</strong> {{ encomenda.sabor }}
+                </p>
+                <p *ngIf="encomenda.decoracao">
+                  <strong>Decoração:</strong> {{ encomenda.decoracao }}
+                </p>
+                <p *ngIf="encomenda.valorEstimado">
+                  <strong>Valor Estimado:</strong> R$ {{ encomenda.valorEstimado | number:'1.2-2' }}
+                </p>
+              </div>
+
+              <div class="encomenda-footer">
+                <button class="btn-outline btn-sm">
+                  <mat-icon>visibility</mat-icon>
+                  Ver Detalhes
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+    </mat-tab-group>
+  </div>
+</div>
