@@ -1,0 +1,57 @@
+.admin-dashboard {
+  h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 30px;
+  }
+
+  .dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+
+    .stat-card {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 25px;
+      cursor: pointer;
+      transition: all 0.3s;
+
+      &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+      }
+
+      mat-icon {
+        font-size: 48px;
+        width: 48px;
+        height: 48px;
+        color: var(--primary-pink);
+      }
+
+      .stat-info {
+        h3 {
+          font-size: 32px;
+          font-weight: 700;
+          color: var(--text-dark);
+          margin-bottom: 5px;
+        }
+
+        p {
+          color: var(--text-light);
+          font-size: 14px;
+        }
+      }
+
+      &.warning mat-icon {
+        color: #FF9800;
+      }
+
+      &.success mat-icon {
+        color: #4CAF50;
+      }
+    }
+  }
+}

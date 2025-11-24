@@ -16,11 +16,19 @@ export class EncomendaService {
     return this.http.post<Encomenda>(this.apiUrl, encomenda);
   }
 
+  listarTodas(): Observable<Encomenda[]> {
+    return this.http.get<Encomenda[]>(this.apiUrl);
+  }
+
   listarPorUsuario(usuarioId: string): Observable<Encomenda[]> {
     return this.http.get<Encomenda[]>(`${this.apiUrl}/usuario/${usuarioId}`);
   }
 
   buscarPorId(id: string): Observable<Encomenda> {
     return this.http.get<Encomenda>(`${this.apiUrl}/${id}`);
+  }
+
+  atualizarStatus(id: string, status: string): Observable<Encomenda> {
+    return this.http.patch<Encomenda>(`${this.apiUrl}/${id}/status`, { status });
   }
 }

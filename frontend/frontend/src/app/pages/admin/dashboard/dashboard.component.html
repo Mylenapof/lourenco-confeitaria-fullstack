@@ -1,1 +1,56 @@
-<p>dashboard works!</p>
+<div class="admin-dashboard">
+  <h1>Dashboard</h1>
+
+  <div class="loading" *ngIf="loading">Carregando...</div>
+
+  <div class="dashboard-grid" *ngIf="!loading && dashboard">
+    <!-- Cards de Estatísticas -->
+    <mat-card class="stat-card">
+      <mat-icon>inventory</mat-icon>
+      <div class="stat-info">
+        <h3>{{ dashboard.totalProdutos }}</h3>
+        <p>Total de Produtos</p>
+      </div>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-icon>shopping_cart</mat-icon>
+      <div class="stat-info">
+        <h3>{{ dashboard.totalPedidos }}</h3>
+        <p>Total de Pedidos</p>
+      </div>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-icon>cake</mat-icon>
+      <div class="stat-info">
+        <h3>{{ dashboard.totalEncomendas }}</h3>
+        <p>Total de Encomendas</p>
+      </div>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-icon>attach_money</mat-icon>
+      <div class="stat-info">
+        <h3>R$ {{ dashboard.faturamentoTotal | number:'1.2-2' }}</h3>
+        <p>Faturamento Total</p>
+      </div>
+    </mat-card>
+
+    <mat-card class="stat-card warning">
+      <mat-icon>pending</mat-icon>
+      <div class="stat-info">
+        <h3>{{ dashboard.pedidosPendentes }}</h3>
+        <p>Pedidos Pendentes</p>
+      </div>
+    </mat-card>
+
+    <mat-card class="stat-card success">
+      <mat-icon>check_circle</mat-icon>
+      <div class="stat-info">
+        <h3>{{ dashboard.pedidosEntregues }}</h3>
+        <p>Pedidos Entregues</p>
+      </div>
+    </mat-card>
+  </div>
+</div>

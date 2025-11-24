@@ -39,9 +39,33 @@ export const routes: Routes = [
     path: 'carrinho',
     loadComponent: () => import('./pages/carrinho/carrinho.component').then(m => m.CarrinhoComponent)
   },
+  // 🔹 ROTAS DE ADMIN
+  {
+    path: 'admin',
+    canActivate: [authGuard],
+    data: { requireAdmin: true },
+    children: [
+      {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full'
+      },
+      {
+        path: 'dashboard',
+        loadComponent: () => import('./pages/admin/dashboard/dashboard.component').then(m => m.DashboardComponent)
+      },
+      {
+        path: 'produtos',
+        loadComponent: () => import('./pages/admin/produtos/produtos.component').then(m => m.ProdutosComponent)
+      },
+      {
+        path: 'pedidos',
+        loadComponent: () => import('./pages/admin/pedidos/pedidos.component').then(m => m.PedidosComponent)
+      }
+    ]
+  },
   {
     path: '**',
     redirectTo: ''
   }
 ];
-

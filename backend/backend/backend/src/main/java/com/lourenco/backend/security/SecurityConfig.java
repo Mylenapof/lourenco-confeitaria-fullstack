@@ -1,4 +1,5 @@
 package com.lourenco.backend.security;
+
 import java.util.Arrays;
 
 import org.springframework.context.annotation.Bean;
@@ -17,7 +18,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
-@EnableMethodSecurity(prePostEnabled = true) // IMPORTANTE: Habilita @PreAuthorize
+@EnableMethodSecurity(prePostEnabled = true) 
 public class SecurityConfig {
 
     @Bean
@@ -26,23 +27,28 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/auth/**").permitAll()
-                    .requestMatchers("/produtos/**", "/categorias/**").permitAll() // Produtos públicos
-                    .requestMatchers("/files/download/**").permitAll() // ← ADICIONE ESTA LINHA
-                    .requestMatchers("/encomendas").permitAll() // Criar encomenda sem login
+                    .requestMatchers("/auth/**", "/produtos/**", "/categorias/**", "/files/download/**", "/encomendas").permitAll()
                     .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
+    // ✅ CORREÇÃO CORS DEFINITIVA
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200", "http://localhost:3000"));
+        
+        // 🔑 Usamos setAllowedOriginPatterns para permitir curingas com allowCredentials=true
+        configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:*", "http://127.0.0.1:*"));
+        
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
-        configuration.setAllowCredentials(true);
+        
+        // Headers necessários para JWT
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept"));
+        
+        // Necessário para JWT e Cookies
+        configuration.setAllowCredentials(true); 
         
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

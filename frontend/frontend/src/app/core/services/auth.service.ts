@@ -7,6 +7,12 @@ import { jwtDecode } from 'jwt-decode';
 import { environment } from '@env/environment';
 import { LoginRequest, LoginResponse, RegistroRequest, Usuario } from '@models/usuario.model';
 
+interface DecodedToken {
+  sub: string;
+  exp: number;
+  authorities?: string[];
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -35,6 +41,8 @@ export class AuthService {
   login(credentials: LoginRequest): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/login`, credentials).pipe(
       tap(response => {
+        console.log('✅ Login response:', response);
+        
         if (this.isBrowser) {
           localStorage.setItem('token', response.token);
           this.loadUserFromToken();
@@ -65,7 +73,7 @@ export class AuthService {
     if (!token) return false;
 
     try {
-      const decoded: any = jwtDecode(token);
+      const decoded: DecodedToken = jwtDecode(token);
       const isExpired = decoded.exp * 1000 < Date.now();
       return !isExpired;
     } catch {
@@ -75,6 +83,7 @@ export class AuthService {
 
   isAdmin(): boolean {
     const user = this.currentUserSubject.value;
+    console.log('🔍 Verificando admin:', user?.role);
     return user?.role === 'ADMIN';
   }
 
@@ -90,6 +99,8 @@ export class AuthService {
       // Buscar dados completos do usuário
       this.http.get<Usuario>(`${this.usuariosUrl}/me`).subscribe({
         next: (usuario) => {
+          console.log('👤 Usuário carregado:', usuario);
+          console.log('🎭 Role:', usuario.role);
           this.currentUserSubject.next(usuario);
         },
         error: (err) => {
