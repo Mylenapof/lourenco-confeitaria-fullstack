@@ -1,57 +1,258 @@
-.admin-dashboard {
-  h1 {
-    font-size: 32px;
-    font-weight: 700;
-    color: var(--text-dark);
-    margin-bottom: 30px;
-  }
+.dashboard-page {
+  min-height: 100vh;
+  background: #FAFAFA;
+  padding: 40px 0;
 
-  .dashboard-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+    padding: 30px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: var(--shadow-sm);
 
-    .stat-card {
+    h1 {
+      font-size: 32px;
+      font-weight: 700;
+      background: var(--gradient-pink);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 5px;
+    }
+
+    p {
+      color: var(--text-light);
+      font-size: 16px;
+    }
+
+    button {
+      background: var(--gradient-pink);
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 20px;
-      padding: 25px;
-      cursor: pointer;
+      gap: 8px;
       transition: all 0.3s;
+      box-shadow: 0 4px 12px rgba(233, 30, 140, 0.3);
 
       &:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(233, 30, 140, 0.4);
       }
 
       mat-icon {
-        font-size: 48px;
-        width: 48px;
-        height: 48px;
-        color: var(--primary-pink);
-      }
-
-      .stat-info {
-        h3 {
-          font-size: 32px;
-          font-weight: 700;
-          color: var(--text-dark);
-          margin-bottom: 5px;
-        }
-
-        p {
-          color: var(--text-light);
-          font-size: 14px;
-        }
-      }
-
-      &.warning mat-icon {
-        color: #FF9800;
-      }
-
-      &.success mat-icon {
-        color: #4CAF50;
+        font-size: 22px;
+        width: 22px;
+        height: 22px;
       }
     }
+  }
+
+  .loading {
+    text-align: center;
+    padding: 80px 0;
+    color: var(--text-light);
+
+    mat-icon {
+      font-size: 64px;
+      width: 64px;
+      height: 64px;
+      margin-bottom: 20px;
+      color: var(--primary-pink);
+      animation: spin 2s linear infinite;
+    }
+
+    p {
+      font-size: 18px;
+      color: var(--text-light);
+    }
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    margin-bottom: 40px;
+  }
+
+  .stat-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 28px;
+    border-radius: 16px;
+    background: white;
+    transition: all 0.3s;
+    cursor: pointer;
+    border: 2px solid transparent;
+
+    &:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--light-pink);
+    }
+
+    .stat-icon {
+      width: 70px;
+      height: 70px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+
+      mat-icon {
+        font-size: 36px;
+        width: 36px;
+        height: 36px;
+        color: white;
+      }
+    }
+
+    .stat-info {
+      flex: 1;
+
+      h3 {
+        font-size: 36px;
+        font-weight: 700;
+        margin-bottom: 6px;
+        background: var(--gradient-pink);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      p {
+        font-size: 15px;
+        color: var(--text-dark);
+        margin-bottom: 6px;
+        font-weight: 600;
+      }
+
+      .stat-detail {
+        font-size: 13px;
+        color: var(--text-light);
+        display: block;
+      }
+    }
+
+    // Gradientes Rosa para cada card
+    &.produtos .stat-icon {
+      background: linear-gradient(135deg, #E91E8C 0%, #FF69B4 100%);
+    }
+
+    &.pedidos .stat-icon {
+      background: linear-gradient(135deg, #FF6B9D 0%, #FFA8C5 100%);
+    }
+
+    &.encomendas .stat-icon {
+      background: linear-gradient(135deg, #C91876 0%, #E91E8C 100%);
+    }
+
+    &.usuarios .stat-icon {
+      background: linear-gradient(135deg, #FF1493 0%, #FF69B4 100%);
+    }
+
+    &.faturamento .stat-icon {
+      background: linear-gradient(135deg, #DB2777 0%, #F472B6 100%);
+    }
+
+    &.faturamento-mes .stat-icon {
+      background: linear-gradient(135deg, #BE185D 0%, #EC4899 100%);
+    }
+
+    &.ticket .stat-icon {
+      background: linear-gradient(135deg, #9D174D 0%, #DB2777 100%);
+    }
+
+    &.entregues .stat-icon {
+      background: linear-gradient(135deg, #831843 0%, #BE185D 100%);
+    }
+  }
+
+  .quick-actions {
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: var(--shadow-sm);
+
+    h2 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 24px;
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      &::before {
+        content: '';
+        width: 4px;
+        height: 28px;
+        background: var(--gradient-pink);
+        border-radius: 4px;
+      }
+    }
+
+    .actions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+
+      button {
+        padding: 20px;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        background: white;
+        color: var(--primary-pink);
+        border: 2px solid var(--primary-pink);
+        border-radius: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+
+        &:hover {
+          background: var(--gradient-pink);
+          color: white;
+          transform: translateY(-3px);
+          box-shadow: 0 8px 20px rgba(233, 30, 140, 0.3);
+        }
+
+        mat-icon {
+          font-size: 24px;
+          width: 24px;
+          height: 24px;
+        }
+      }
+    }
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 20px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .actions-grid {
+    grid-template-columns: 1fr !important;
   }
 }

@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
+  // ==================== ROTAS PÚBLICAS ====================
   {
     path: '',
     loadComponent: () => import('./pages/home/home.component').then(m => m.HomeComponent)
@@ -39,7 +40,8 @@ export const routes: Routes = [
     path: 'carrinho',
     loadComponent: () => import('./pages/carrinho/carrinho.component').then(m => m.CarrinhoComponent)
   },
-  // 🔹 ROTAS DE ADMIN
+
+  // ==================== ÁREA ADMINISTRATIVA ====================
   {
     path: 'admin',
     canActivate: [authGuard],
@@ -59,11 +61,28 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/admin/produtos/produtos.component').then(m => m.ProdutosComponent)
       },
       {
+        path: 'produtos/novo',
+        loadComponent: () => import('./pages/admin/produto-form/produto-form.component').then(m => m.ProdutoFormComponent)
+      },
+      {
+        path: 'produtos/editar/:id',
+        loadComponent: () => import('./pages/admin/produto-form/produto-form.component').then(m => m.ProdutoFormComponent)
+      },
+      {
         path: 'pedidos',
         loadComponent: () => import('./pages/admin/pedidos/pedidos.component').then(m => m.PedidosComponent)
+      },
+      {
+        path: 'encomendas',
+        loadComponent: () => import('./pages/admin/encomendas-admin/encomendas-admin.component').then(m => m.EncomendasAdminComponent)
+      },
+      {
+        path: 'relatorios',
+        loadComponent: () => import('./pages/admin/relatorios/relatorios.component').then(m => m.RelatoriosComponent)
       }
     ]
   },
+
   {
     path: '**',
     redirectTo: ''

@@ -1,95 +1,215 @@
-<div class="encomendas-admin">
-  <div class="page-header">
-    <h1>Gerenciar Encomendas</h1>
-    <div class="stats">
-      <span class="stat">Total: {{ encomendas.length }}</span>
-      <span class="stat">Pendentes: {{ getPendentes() }}</span>
+<div class="encomendas-page">
+  <div class="container">
+    
+    <!-- Header -->
+    <div class="page-header">
+      <div>
+        <h1>Gerenciar Encomendas</h1>
+        <p>{{ encomendas.length }} encomendas no total</p>
+      </div>
+      <button mat-raised-button (click)="carregarEncomendas()" [disabled]="loading">
+        <mat-icon>refresh</mat-icon>
+        Atualizar
+      </button>
     </div>
-  </div>
 
-  <div class="loading" *ngIf="loading">Carregando...</div>
+    <!-- Loading -->
+    <div class="loading" *ngIf="loading">
+      <mat-icon>hourglass_empty</mat-icon>
+      <p>Carregando encomendas...</p>
+    </div>
 
-  <div class="table-container" *ngIf="!loading">
-    <table mat-table [dataSource]="encomendas" class="encomendas-table">
+    <!-- Filtros -->
+    <div class="filtros-section" *ngIf="!loading">
+      <div class="filtros-chips">
+        <button 
+          mat-flat-button 
+          [class.active]="filtroAtual === 'TODOS'"
+          (click)="aplicarFiltro('TODOS')">
+          Todas ({{ contarPorStatus('TODOS') }})
+        </button>
+        
+        <button 
+          mat-flat-button 
+          [class.active]="filtroAtual === 'PENDENTE'"
+          (click)="aplicarFiltro('PENDENTE')">
+          Pendentes ({{ contarPorStatus('PENDENTE') }})
+        </button>
 
-      <!-- ID -->
-      <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef>ID</th>
-        <td mat-cell *matCellDef="let encomenda">
-          #{{ encomenda.id.substring(0, 8) }}
-        </td>
-      </ng-container>
+        <button 
+          mat-flat-button 
+          [class.active]="filtroAtual === 'APROVADO'"
+          (click)="aplicarFiltro('APROVADO')">
+          Aprovadas ({{ contarPorStatus('APROVADO') }})
+        </button>
 
-      <!-- Cliente -->
-      <ng-container matColumnDef="cliente">
-        <th mat-header-cell *matHeaderCellDef>Cliente</th>
-        <td mat-cell *matCellDef="let encomenda">
-          <div class="cliente-info">
-            <strong>{{ encomenda.usuario?.nome }}</strong>
-            <small>{{ encomenda.usuario?.email }}</small>
+        <button 
+          mat-flat-button 
+          [class.active]="filtroAtual === 'EM_PRODUCAO'"
+          (click)="aplicarFiltro('EM_PRODUCAO')">
+          Em Produção ({{ contarPorStatus('EM_PRODUCAO') }})
+        </button>
+
+        <button 
+          mat-flat-button 
+          [class.active]="filtroAtual === 'PRONTO'"
+          (click)="aplicarFiltro('PRONTO')">
+          Prontas ({{ contarPorStatus('PRONTO') }})
+        </button>
+      </div>
+    </div>
+
+    <!-- Lista de Encomendas -->
+    <div class="encomendas-list" *ngIf="!loading">
+      
+      <div class="empty-state" *ngIf="encomendasFiltradas.length === 0">
+        <mat-icon>inbox</mat-icon>
+        <h3>Nenhuma encomenda encontrada</h3>
+        <p>{{ filtroAtual === 'TODOS' ? 'Não há encomendas cadastradas' : 'Não há encomendas com este status' }}</p>
+      </div>
+
+      <mat-accordion *ngIf="encomendasFiltradas.length > 0">
+        <mat-expansion-panel *ngFor="let encomenda of encomendasFiltradas" class="encomenda-card">
+          
+          <!-- Header do Card -->
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <div class="encomenda-header-info">
+                <div class="encomenda-tipo">
+                  <mat-icon>cake</mat-icon>
+                  <strong>{{ encomenda.tipoProduto }}</strong>
+                </div>
+                <span class="encomenda-cliente">{{ encomenda.usuario?.nome || 'Cliente' }}</span>
+              </div>
+            </mat-panel-title>
+            <mat-panel-description>
+              <div class="encomenda-header-meta">
+                <div class="prazo-info" [class]="getUrgenciaClass(calcularDiasRestantes(encomenda.dataEntrega))">
+                  <mat-icon>event</mat-icon>
+                  <span>{{ encomenda.dataEntrega | date:'dd/MM/yyyy' }}</span>
+                  <strong>({{ calcularDiasRestantes(encomenda.dataEntrega) }} dias)</strong>
+                </div>
+                <mat-chip [class]="getStatusClass(encomenda.status)">
+                  {{ getStatusLabel(encomenda.status) }}
+                </mat-chip>
+                <strong class="encomenda-valor" *ngIf="encomenda.valorEstimado">
+                  R$ {{ encomenda.valorEstimado | number:'1.2-2' }}
+                </strong>
+              </div>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <!-- Conteúdo Expandido -->
+          <div class="encomenda-content">
+            
+            <!-- Informações do Cliente -->
+            <div class="info-section">
+              <h3>
+                <mat-icon>person</mat-icon>
+                Informações do Cliente
+              </h3>
+              <div class="info-grid">
+                <div class="info-item">
+                  <span class="label">Nome:</span>
+                  <span class="value">{{ encomenda.usuario?.nome }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="label">Email:</span>
+                  <span class="value">{{ encomenda.usuario?.email }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="label">Telefone:</span>
+                  <span class="value">{{ encomenda.usuario?.telefone || 'Não informado' }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Detalhes da Encomenda -->
+            <div class="info-section">
+              <h3>
+                <mat-icon>description</mat-icon>
+                Detalhes da Encomenda
+              </h3>
+              <div class="detalhes-grid">
+                <div class="detalhe-item">
+                  <span class="label">Tipo de Produto:</span>
+                  <strong>{{ encomenda.tipoProduto }}</strong>
+                </div>
+                <div class="detalhe-item" *ngIf="encomenda.tamanho">
+                  <span class="label">Tamanho:</span>
+                  <strong>{{ encomenda.tamanho }}</strong>
+                </div>
+                <div class="detalhe-item" *ngIf="encomenda.sabor">
+                  <span class="label">Sabor:</span>
+                  <strong>{{ encomenda.sabor }}</strong>
+                </div>
+                <div class="detalhe-item full-width" *ngIf="encomenda.decoracao">
+                  <span class="label">Decoração:</span>
+                  <p class="detalhe-desc">{{ encomenda.decoracao }}</p>
+                </div>
+                <div class="detalhe-item full-width" *ngIf="encomenda.observacoes">
+                  <span class="label">Observações:</span>
+                  <p class="detalhe-obs">{{ encomenda.observacoes }}</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Formulário de Orçamento -->
+            <div class="info-section" *ngIf="encomenda.status === 'PENDENTE' && encomendaOrcamento?.id === encomenda.id">
+              <h3>
+                <mat-icon>attach_money</mat-icon>
+                Enviar Orçamento
+              </h3>
+              <form [formGroup]="orcamentoForm" (ngSubmit)="enviarOrcamento()" class="orcamento-form">
+                <mat-form-field appearance="outline">
+                  <mat-label>Valor Estimado</mat-label>
+                  <input matInput type="number" step="0.01" formControlName="valorEstimado">
+                  <span matPrefix>R$&nbsp;</span>
+                  <mat-error *ngIf="orcamentoForm.get('valorEstimado')?.hasError('required')">
+                    Valor é obrigatório
+                  </mat-error>
+                </mat-form-field>
+                <div class="orcamento-actions">
+                  <button type="button" mat-stroked-button (click)="encomendaOrcamento = null">
+                    Cancelar
+                  </button>
+                  <button type="submit" mat-raised-button color="primary" [disabled]="orcamentoForm.invalid">
+                    Enviar Orçamento
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            <!-- Ações -->
+            <div class="encomenda-actions">
+              <h3>Ações</h3>
+              <div class="action-buttons">
+                <button 
+                  mat-raised-button 
+                  class="btn-orcamento"
+                  *ngIf="encomenda.status === 'PENDENTE'"
+                  (click)="abrirFormularioOrcamento(encomenda)">
+                  <mat-icon>attach_money</mat-icon>
+                  Enviar Orçamento
+                </button>
+                
+                <button 
+                  mat-raised-button 
+                  *ngFor="let status of statusOptions"
+                  [disabled]="encomenda.status === status.value"
+                  [class]="'status-btn-' + status.color"
+                  (click)="atualizarStatus(encomenda, status.value)">
+                  {{ status.label }}
+                </button>
+              </div>
+            </div>
+
           </div>
-        </td>
-      </ng-container>
 
-      <!-- Tipo -->
-      <ng-container matColumnDef="tipo">
-        <th mat-header-cell *matHeaderCellDef>Tipo</th>
-        <td mat-cell *matCellDef="let encomenda">
-          {{ encomenda.tipoProduto }}
-        </td>
-      </ng-container>
+        </mat-expansion-panel>
+      </mat-accordion>
 
-      <!-- Data Entrega -->
-      <ng-container matColumnDef="dataEntrega">
-        <th mat-header-cell *matHeaderCellDef>Entrega</th>
-        <td mat-cell *matCellDef="let encomenda">
-          {{ encomenda.dataEntrega | date:'dd/MM/yyyy' }}
-        </td>
-      </ng-container>
-
-      <!-- Status -->
-      <ng-container matColumnDef="status">
-        <th mat-header-cell *matHeaderCellDef>Status</th>
-        <td mat-cell *matCellDef="let encomenda">
-          <mat-chip [ngClass]="getStatusClass(encomenda.status)">
-            {{ getStatusTexto(encomenda.status) }}
-          </mat-chip>
-        </td>
-      </ng-container>
-
-      <!-- Valor -->
-      <ng-container matColumnDef="valor">
-        <th mat-header-cell *matHeaderCellDef>Valor</th>
-        <td mat-cell *matCellDef="let encomenda">
-          <span *ngIf="encomenda.valorEstimado">
-            R$ {{ encomenda.valorEstimado | number:'1.2-2' }}
-          </span>
-          <span *ngIf="!encomenda.valorEstimado">-</span>
-        </td>
-      </ng-container>
-
-      <!-- Ações -->
-      <ng-container matColumnDef="acoes">
-        <th mat-header-cell *matHeaderCellDef>Ações</th>
-        <td mat-cell *matCellDef="let encomenda">
-          <mat-select 
-            [value]="encomenda.status"
-            (selectionChange)="atualizarStatus(encomenda.id, $event.value)"
-            class="status-select">
-            <mat-option *ngFor="let status of statusOptions" [value]="status">
-              {{ getStatusTexto(status) }}
-            </mat-option>
-          </mat-select>
-        </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
-
-    <div class="empty-state" *ngIf="!loading && encomendas.length === 0">
-      <mat-icon>inbox</mat-icon>
-      <h3>Nenhuma encomenda encontrada</h3>
     </div>
+
   </div>
 </div>

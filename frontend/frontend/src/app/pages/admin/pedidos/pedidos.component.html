@@ -1,1 +1,175 @@
-<p>pedidos works!</p>
+<div class="pedidos-page">
+  <div class="container">
+    
+    <!-- Header -->
+    <div class="page-header">
+      <div>
+        <h1>Gerenciar Pedidos</h1>
+        <p>{{ pedidos.length }} pedidos no total</p>
+      </div>
+      <button mat-raised-button (click)="carregarPedidos()" [disabled]="loading">
+        <mat-icon>refresh</mat-icon>
+        Atualizar
+      </button>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading" *ngIf="loading">
+      <mat-icon>hourglass_empty</mat-icon>
+      <p>Carregando pedidos...</p>
+    </div>
+
+    <!-- Filtros -->
+    <div class="filtros-section" *ngIf="!loading">
+      <div class="filtros-chips">
+        <button 
+          mat-flat-button 
+          [class.active]="filtroAtual === 'TODOS'"
+          (click)="aplicarFiltro('TODOS')">
+          Todos ({{ contarPorStatus('TODOS') }})
+        </button>
+        
+        <button 
+          mat-flat-button 
+          [class.active]="filtroAtual === 'PENDENTE'"
+          (click)="aplicarFiltro('PENDENTE')">
+          Pendentes ({{ contarPorStatus('PENDENTE') }})
+        </button>
+
+        <button 
+          mat-flat-button 
+          [class.active]="filtroAtual === 'CONFIRMADO'"
+          (click)="aplicarFiltro('CONFIRMADO')">
+          Confirmados ({{ contarPorStatus('CONFIRMADO') }})
+        </button>
+
+        <button 
+          mat-flat-button 
+          [class.active]="filtroAtual === 'EM_PREPARACAO'"
+          (click)="aplicarFiltro('EM_PREPARACAO')">
+          Em Preparação ({{ contarPorStatus('EM_PREPARACAO') }})
+        </button>
+
+        <button 
+          mat-flat-button 
+          [class.active]="filtroAtual === 'PRONTO'"
+          (click)="aplicarFiltro('PRONTO')">
+          Prontos ({{ contarPorStatus('PRONTO') }})
+        </button>
+
+        <button 
+          mat-flat-button 
+          [class.active]="filtroAtual === 'ENTREGUE'"
+          (click)="aplicarFiltro('ENTREGUE')">
+          Entregues ({{ contarPorStatus('ENTREGUE') }})
+        </button>
+      </div>
+    </div>
+
+    <!-- Lista de Pedidos -->
+    <div class="pedidos-list" *ngIf="!loading">
+      
+      <div class="empty-state" *ngIf="pedidosFiltrados.length === 0">
+        <mat-icon>inbox</mat-icon>
+        <h3>Nenhum pedido encontrado</h3>
+        <p>{{ filtroAtual === 'TODOS' ? 'Não há pedidos cadastrados' : 'Não há pedidos com este status' }}</p>
+      </div>
+
+      <mat-accordion *ngIf="pedidosFiltrados.length > 0">
+        <mat-expansion-panel *ngFor="let pedido of pedidosFiltrados" class="pedido-card">
+          
+          <!-- Header do Card -->
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <div class="pedido-header-info">
+                <div class="pedido-id">
+                  <mat-icon>receipt</mat-icon>
+                  <strong>Pedido #{{ pedido.id.substring(0, 8) }}</strong>
+                </div>
+                <span class="pedido-cliente">{{ pedido.usuario?.nome || 'Cliente' }}</span>
+              </div>
+            </mat-panel-title>
+            <mat-panel-description>
+              <div class="pedido-header-meta">
+                <span class="pedido-data">{{ pedido.dataPedido | date:'dd/MM/yyyy HH:mm' }}</span>
+                <mat-chip [class]="getStatusClass(pedido.status)">
+                  {{ getStatusLabel(pedido.status) }}
+                </mat-chip>
+                <strong class="pedido-valor">R$ {{ pedido.valorTotal | number:'1.2-2' }}</strong>
+              </div>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <!-- Conteúdo Expandido -->
+          <div class="pedido-content">
+            
+            <!-- Informações do Cliente -->
+            <div class="info-section">
+              <h3>
+                <mat-icon>person</mat-icon>
+                Informações do Cliente
+              </h3>
+              <div class="info-grid">
+                <div class="info-item">
+                  <span class="label">Nome:</span>
+                  <span class="value">{{ pedido.usuario?.nome }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="label">Email:</span>
+                  <span class="value">{{ pedido.usuario?.email }}</span>
+                </div>
+                <div class="info-item full-width">
+                  <span class="label">Endereço de Entrega:</span>
+                  <span class="value">{{ pedido.enderecoEntrega }}</span>
+                </div>
+                <div class="info-item full-width" *ngIf="pedido.observacoes">
+                  <span class="label">Observações:</span>
+                  <span class="value obs">{{ pedido.observacoes }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Itens do Pedido -->
+            <div class="info-section">
+              <h3>
+                <mat-icon>shopping_basket</mat-icon>
+                Itens do Pedido
+              </h3>
+              <div class="itens-list">
+                <div class="item-row" *ngFor="let item of pedido.itens">
+                  <span class="item-qtd">{{ item.quantidade }}x</span>
+                  <span class="item-nome">{{ item.nomeProduto }}</span>
+                  <span class="item-preco-unit">R$ {{ item.precoUnitario | number:'1.2-2' }}</span>
+                  <strong class="item-subtotal">R$ {{ item.subtotal | number:'1.2-2' }}</strong>
+                </div>
+              </div>
+              <div class="total-pedido">
+                <span>Total do Pedido:</span>
+                <strong>R$ {{ pedido.valorTotal | number:'1.2-2' }}</strong>
+              </div>
+            </div>
+
+            <!-- Ações -->
+            <div class="pedido-actions">
+              <h3>Atualizar Status do Pedido</h3>
+              <div class="status-buttons">
+                <button 
+                  mat-raised-button 
+                  *ngFor="let status of statusOptions"
+                  [disabled]="pedido.status === status.value"
+                  [class]="'status-btn-' + status.color"
+                  (click)="atualizarStatus(pedido, status.value)">
+                  {{ status.label }}
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+        </mat-expansion-panel>
+      </mat-accordion>
+
+    </div>
+
+  </div>
+</div>

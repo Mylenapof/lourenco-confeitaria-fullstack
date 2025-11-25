@@ -1,56 +1,146 @@
-<div class="admin-dashboard">
-  <h1>Dashboard</h1>
-
-  <div class="loading" *ngIf="loading">Carregando...</div>
-
-  <div class="dashboard-grid" *ngIf="!loading && dashboard">
-    <!-- Cards de Estatísticas -->
-    <mat-card class="stat-card">
-      <mat-icon>inventory</mat-icon>
-      <div class="stat-info">
-        <h3>{{ dashboard.totalProdutos }}</h3>
-        <p>Total de Produtos</p>
+<div class="dashboard-page">
+  <div class="container">
+    <!-- Header -->
+    <div class="page-header">
+      <div>
+        <h1>Dashboard Administrativo</h1>
+        <p>Visão geral do seu negócio</p>
       </div>
-    </mat-card>
+      <button mat-raised-button color="primary" routerLink="/admin/produtos">
+        <mat-icon>add</mat-icon>
+        Novo Produto
+      </button>
+    </div>
 
-    <mat-card class="stat-card">
-      <mat-icon>shopping_cart</mat-icon>
-      <div class="stat-info">
-        <h3>{{ dashboard.totalPedidos }}</h3>
-        <p>Total de Pedidos</p>
-      </div>
-    </mat-card>
+    <!-- Loading -->
+    <div class="loading" *ngIf="loading">
+      <mat-icon>hourglass_empty</mat-icon>
+      <p>Carregando estatísticas...</p>
+    </div>
 
-    <mat-card class="stat-card">
-      <mat-icon>cake</mat-icon>
-      <div class="stat-info">
-        <h3>{{ dashboard.totalEncomendas }}</h3>
-        <p>Total de Encomendas</p>
-      </div>
-    </mat-card>
+    <!-- Stats Grid -->
+    <div class="stats-grid" *ngIf="!loading && stats">
+      
+      <!-- Produtos -->
+      <mat-card class="stat-card produtos">
+        <div class="stat-icon">
+          <mat-icon>cake</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3>{{ stats.totalProdutos }}</h3>
+          <p>Produtos Cadastrados</p>
+          <span class="stat-detail">{{ stats.totalProdutosDisponiveis }} disponíveis</span>
+        </div>
+      </mat-card>
 
-    <mat-card class="stat-card">
-      <mat-icon>attach_money</mat-icon>
-      <div class="stat-info">
-        <h3>R$ {{ dashboard.faturamentoTotal | number:'1.2-2' }}</h3>
-        <p>Faturamento Total</p>
-      </div>
-    </mat-card>
+      <!-- Pedidos -->
+      <mat-card class="stat-card pedidos">
+        <div class="stat-icon">
+          <mat-icon>shopping_cart</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3>{{ stats.totalPedidos }}</h3>
+          <p>Total de Pedidos</p>
+          <span class="stat-detail">{{ stats.pedidosPendentes }} pendentes</span>
+        </div>
+      </mat-card>
 
-    <mat-card class="stat-card warning">
-      <mat-icon>pending</mat-icon>
-      <div class="stat-info">
-        <h3>{{ dashboard.pedidosPendentes }}</h3>
-        <p>Pedidos Pendentes</p>
-      </div>
-    </mat-card>
+      <!-- Encomendas -->
+      <mat-card class="stat-card encomendas">
+        <div class="stat-icon">
+          <mat-icon>event_note</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3>{{ stats.totalEncomendas }}</h3>
+          <p>Encomendas</p>
+          <span class="stat-detail">{{ stats.encomendasPendentes }} pendentes</span>
+        </div>
+      </mat-card>
 
-    <mat-card class="stat-card success">
-      <mat-icon>check_circle</mat-icon>
-      <div class="stat-info">
-        <h3>{{ dashboard.pedidosEntregues }}</h3>
-        <p>Pedidos Entregues</p>
+      <!-- Usuários -->
+      <mat-card class="stat-card usuarios">
+        <div class="stat-icon">
+          <mat-icon>people</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3>{{ stats.totalUsuarios }}</h3>
+          <p>Usuários Cadastrados</p>
+          <span class="stat-detail">{{ stats.totalCategorias }} categorias</span>
+        </div>
+      </mat-card>
+
+      <!-- Faturamento Total -->
+      <mat-card class="stat-card faturamento">
+        <div class="stat-icon">
+          <mat-icon>attach_money</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3>R$ {{ stats.faturamentoTotal | number:'1.2-2' }}</h3>
+          <p>Faturamento Total</p>
+          <span class="stat-detail">Todos os pedidos entregues</span>
+        </div>
+      </mat-card>
+
+      <!-- Faturamento Mês -->
+      <mat-card class="stat-card faturamento-mes">
+        <div class="stat-icon">
+          <mat-icon>trending_up</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3>R$ {{ stats.faturamentoMesAtual | number:'1.2-2' }}</h3>
+          <p>Faturamento do Mês</p>
+          <span class="stat-detail">Mês atual</span>
+        </div>
+      </mat-card>
+
+      <!-- Ticket Médio -->
+      <mat-card class="stat-card ticket">
+        <div class="stat-icon">
+          <mat-icon>receipt_long</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3>R$ {{ stats.ticketMedio | number:'1.2-2' }}</h3>
+          <p>Ticket Médio</p>
+          <span class="stat-detail">Por pedido</span>
+        </div>
+      </mat-card>
+
+      <!-- Pedidos Entregues -->
+      <mat-card class="stat-card entregues">
+        <div class="stat-icon">
+          <mat-icon>check_circle</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3>{{ stats.pedidosEntregues }}</h3>
+          <p>Pedidos Entregues</p>
+          <span class="stat-detail">{{ stats.pedidosConfirmados }} confirmados</span>
+        </div>
+      </mat-card>
+
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions" *ngIf="!loading">
+      <h2>Ações Rápidas</h2>
+      <div class="actions-grid">
+        <button mat-raised-button routerLink="/admin/produtos/novo">
+          <mat-icon>add_circle</mat-icon>
+          Adicionar Produto
+        </button>
+        <button mat-raised-button routerLink="/admin/pedidos">
+          <mat-icon>list_alt</mat-icon>
+          Ver Pedidos
+        </button>
+        <button mat-raised-button routerLink="/admin/encomendas">
+          <mat-icon>event</mat-icon>
+          Ver Encomendas
+        </button>
+        <button mat-raised-button routerLink="/admin/relatorios">
+          <mat-icon>assessment</mat-icon>
+          Relatórios
+        </button>
       </div>
-    </mat-card>
+    </div>
+
   </div>
 </div>

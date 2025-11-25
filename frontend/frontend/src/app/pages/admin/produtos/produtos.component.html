@@ -1,1 +1,170 @@
-<p>produtos works!</p>
+<div class="produtos-page">
+  <div class="container">
+    
+    <!-- Header -->
+    <div class="page-header">
+      <div>
+        <h1>Gerenciar Produtos</h1>
+        <p>{{ produtos.length }} produtos cadastrados</p>
+      </div>
+      <button mat-raised-button color="primary" routerLink="/admin/produtos/novo">
+        <mat-icon>add</mat-icon>
+        Novo Produto
+      </button>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading" *ngIf="loading">
+      <mat-icon>hourglass_empty</mat-icon>
+      <p>Carregando produtos...</p>
+    </div>
+
+    <!-- Tabela de Produtos -->
+    <div class="produtos-table" *ngIf="!loading">
+      
+      <!-- Lista em Cards (Mobile/Tablet) -->
+      <div class="produtos-cards">
+        <div class="produto-card" *ngFor="let produto of produtos">
+          
+          <div class="card-header">
+            <img [src]="produto.imagemUrl" [alt]="produto.nome" class="produto-thumb">
+            <div class="produto-info">
+              <h3>{{ produto.nome }}</h3>
+              <span class="categoria-badge">{{ produto.categoria.nome }}</span>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <div class="info-row">
+              <span class="label">Preço:</span>
+              <strong class="preco">R$ {{ produto.preco | number:'1.2-2' }}</strong>
+            </div>
+
+            <div class="info-row">
+              <span class="label">Status:</span>
+              <div class="status-badges">
+                <mat-chip [class.disponivel]="produto.disponivel" [class.indisponivel]="!produto.disponivel">
+                  {{ produto.disponivel ? 'Disponível' : 'Indisponível' }}
+                </mat-chip>
+                <mat-chip class="destaque" *ngIf="produto.destaque">
+                  <mat-icon>star</mat-icon>
+                  Destaque
+                </mat-chip>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-actions">
+            <button mat-icon-button [routerLink]="['/admin/produtos/editar', produto.id]" matTooltip="Editar">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button (click)="toggleDisponibilidade(produto)" 
+                    [matTooltip]="produto.disponivel ? 'Tornar Indisponível' : 'Tornar Disponível'">
+              <mat-icon>{{ produto.disponivel ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+            <button mat-icon-button (click)="toggleDestaque(produto)"
+                    [matTooltip]="produto.destaque ? 'Remover Destaque' : 'Adicionar Destaque'">
+              <mat-icon>{{ produto.destaque ? 'star' : 'star_border' }}</mat-icon>
+            </button>
+            <button mat-icon-button (click)="deletar(produto)" color="warn" matTooltip="Deletar">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Tabela Desktop -->
+      <div class="table-container">
+        <table mat-table [dataSource]="produtos" class="produtos-mat-table">
+
+          <!-- Coluna Imagem -->
+          <ng-container matColumnDef="imagem">
+            <th mat-header-cell *matHeaderCellDef>Imagem</th>
+            <td mat-cell *matCellDef="let produto">
+              <img [src]="produto.imagemUrl" [alt]="produto.nome" class="produto-thumb">
+            </td>
+          </ng-container>
+
+          <!-- Coluna Nome -->
+          <ng-container matColumnDef="nome">
+            <th mat-header-cell *matHeaderCellDef>Produto</th>
+            <td mat-cell *matCellDef="let produto">
+              <div class="produto-nome">
+                <strong>{{ produto.nome }}</strong>
+                <span class="ingredientes">{{ produto.ingredientes | slice:0:50 }}...</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Coluna Categoria -->
+          <ng-container matColumnDef="categoria">
+            <th mat-header-cell *matHeaderCellDef>Categoria</th>
+            <td mat-cell *matCellDef="let produto">
+              <span class="categoria-badge">{{ produto.categoria.nome }}</span>
+            </td>
+          </ng-container>
+
+          <!-- Coluna Preço -->
+          <ng-container matColumnDef="preco">
+            <th mat-header-cell *matHeaderCellDef>Preço</th>
+            <td mat-cell *matCellDef="let produto">
+              <strong class="preco">R$ {{ produto.preco | number:'1.2-2' }}</strong>
+            </td>
+          </ng-container>
+
+          <!-- Coluna Status -->
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let produto">
+              <div class="status-badges">
+                <mat-chip [class.disponivel]="produto.disponivel" [class.indisponivel]="!produto.disponivel">
+                  {{ produto.disponivel ? 'Disponível' : 'Indisponível' }}
+                </mat-chip>
+                <mat-chip class="destaque" *ngIf="produto.destaque">
+                  <mat-icon>star</mat-icon>
+                  Destaque
+                </mat-chip>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Coluna Ações -->
+          <ng-container matColumnDef="acoes">
+            <th mat-header-cell *matHeaderCellDef>Ações</th>
+            <td mat-cell *matCellDef="let produto">
+              <button mat-icon-button [matMenuTriggerFor]="menu">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                <button mat-menu-item [routerLink]="['/admin/produtos/editar', produto.id]">
+                  <mat-icon>edit</mat-icon>
+                  Editar
+                </button>
+                <button mat-menu-item (click)="toggleDisponibilidade(produto)">
+                  <mat-icon>{{ produto.disponivel ? 'visibility_off' : 'visibility' }}</mat-icon>
+                  {{ produto.disponivel ? 'Tornar Indisponível' : 'Tornar Disponível' }}
+                </button>
+                <button mat-menu-item (click)="toggleDestaque(produto)">
+                  <mat-icon>{{ produto.destaque ? 'star' : 'star_border' }}</mat-icon>
+                  {{ produto.destaque ? 'Remover Destaque' : 'Adicionar Destaque' }}
+                </button>
+                <mat-divider></mat-divider>
+                <button mat-menu-item (click)="deletar(produto)" class="delete-action">
+                  <mat-icon>delete</mat-icon>
+                  Deletar
+                </button>
+              </mat-menu>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+        </table>
+      </div>
+
+    </div>
+
+  </div>
+</div>

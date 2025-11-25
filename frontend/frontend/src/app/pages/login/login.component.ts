@@ -40,22 +40,30 @@ export class LoginComponent {
     });
   }
 
-  onSubmit() {
-    if (this.loginForm.valid) {
-      this.loading = true;
-      this.errorMessage = '';
+onSubmit() {
+  if (this.loginForm.valid) {
+    this.loading = true;
+    this.errorMessage = '';
 
-      this.authService.login(this.loginForm.value).subscribe({
-        next: (response) => {
-          console.log('Login realizado:', response);
-          this.router.navigate(['/']);
-        },
-        error: (error) => {
-          console.error('Erro no login:', error);
-          this.errorMessage = 'Email ou senha inválidos';
-          this.loading = false;
-        }
-      });
-    }
+    this.authService.login(this.loginForm.value).subscribe({
+      next: (response) => {
+        console.log('Login realizado:', response);
+        
+        // 🔹 REDIRECIONAR BASEADO NA ROLE
+        setTimeout(() => {
+          if (this.authService.isAdmin()) {
+            this.router.navigate(['/admin/dashboard']);
+          } else {
+            this.router.navigate(['/']);
+          }
+        }, 500);
+      },
+      error: (error) => {
+        console.error('Erro no login:', error);
+        this.errorMessage = 'Email ou senha inválidos';
+        this.loading = false;
+      }
+    });
   }
+}
 }

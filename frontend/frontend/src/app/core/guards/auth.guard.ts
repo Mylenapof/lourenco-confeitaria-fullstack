@@ -13,8 +13,9 @@ export const authGuard: CanActivateFn = (route, state) => {
     return false;
   }
 
-  // Verificar se precisa ser admin
+  // 🔹 VERIFICAR SE PRECISA SER ADMIN
   if (route.data['requireAdmin'] && !authService.isAdmin()) {
+    console.warn('⛔ Acesso negado: usuário não é ADMIN');
     router.navigate(['/']);
     return false;
   }

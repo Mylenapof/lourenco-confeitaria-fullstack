@@ -2,13 +2,13 @@
   <div class="container">
     <div class="header-content">
       <!-- Logo -->
-      <div class="logo" routerLink="/">
+      <div class="logo" [routerLink]="isAdmin ? '/admin/dashboard' : '/'">
         <img src="assets/logo-icon.png" alt="Logo">
         <span class="logo-text">Lourenço Confeitaria</span>
       </div>
 
       <!-- Navigation -->
-      <nav class="nav-menu">
+      <nav class="nav-menu" *ngIf="!isAdmin">
         <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Início</a>
         <a routerLink="/cardapio" routerLinkActive="active">Cardápio</a>
         <a routerLink="/encomendas" routerLinkActive="active">Encomendas</a>
@@ -16,16 +16,25 @@
         <a routerLink="/minha-conta" routerLinkActive="active">Minha Conta</a>
       </nav>
 
+      <!-- Admin Navigation -->
+      <nav class="nav-menu" *ngIf="isAdmin">
+        <a routerLink="/admin/dashboard" routerLinkActive="active">Dashboard</a>
+        <a routerLink="/admin/produtos" routerLinkActive="active">Produtos</a>
+        <a routerLink="/admin/pedidos" routerLinkActive="active">Pedidos</a>
+        <a routerLink="/admin/encomendas" routerLinkActive="active">Encomendas</a>
+        <a routerLink="/admin/relatorios" routerLinkActive="active">Relatórios</a>
+      </nav>
+
       <!-- Right side -->
       <div class="header-actions">
-        <!-- Search -->
-        <div class="search-box">
+        <!-- Search (apenas para clientes) -->
+        <div class="search-box" *ngIf="!isAdmin">
           <input type="text" placeholder="Buscar doces...">
           <mat-icon>search</mat-icon>
         </div>
 
-        <!-- Cart -->
-        <button class="cart-btn" routerLink="/carrinho">
+        <!-- Cart (apenas para clientes) -->
+        <button class="cart-btn" routerLink="/carrinho" *ngIf="!isAdmin">
           <mat-icon>shopping_cart</mat-icon>
           <span class="cart-badge" *ngIf="totalItens > 0">{{ totalItens }}</span>
         </button>
@@ -40,17 +49,28 @@
             <mat-icon>account_circle</mat-icon>
           </button>
           <mat-menu #menu="matMenu">
-            <button mat-menu-item routerLink="/minha-conta">
+            <div class="menu-header" mat-menu-item disabled>
+              <span class="user-role-badge" [class.admin]="isAdmin">
+                {{ isAdmin ? '👑 ADMIN' : '👤 USER' }}
+              </span>
+            </div>
+            <mat-divider></mat-divider>
+            
+            <button mat-menu-item routerLink="/minha-conta" *ngIf="!isAdmin">
               <mat-icon>person</mat-icon>
               Minha Conta
             </button>
-            <button mat-menu-item routerLink="/pedidos">
-              <mat-icon>receipt</mat-icon>
-              Meus Pedidos
-            </button>
-            <button mat-menu-item *ngIf="isAdmin" routerLink="/admin">
+            <button mat-menu-item routerLink="/admin/dashboard" *ngIf="isAdmin">
               <mat-icon>dashboard</mat-icon>
-              Admin
+              Dashboard
+            </button>
+            <button mat-menu-item [routerLink]="isAdmin ? '/admin/pedidos' : '/pedidos'">
+              <mat-icon>receipt</mat-icon>
+              {{ isAdmin ? 'Gerenciar Pedidos' : 'Meus Pedidos' }}
+            </button>
+            <button mat-menu-item routerLink="/" *ngIf="isAdmin">
+              <mat-icon>storefront</mat-icon>
+              Ver como Cliente
             </button>
             <mat-divider></mat-divider>
             <button mat-menu-item (click)="logout()">

@@ -1,0 +1,179 @@
+<div class="produto-form-page">
+  <div class="container">
+    
+    <!-- Header -->
+    <div class="page-header">
+      <div class="header-content">
+        <button mat-icon-button routerLink="/admin/produtos" class="back-btn">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <div>
+          <h1>{{ editando ? 'Editar Produto' : 'Novo Produto' }}</h1>
+          <p>{{ editando ? 'Atualize as informações do produto' : 'Adicione um novo produto ao cardápio' }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form -->
+    <div class="form-container">
+      
+      <form [formGroup]="produtoForm" (ngSubmit)="onSubmit()">
+        
+        <div class="form-grid">
+          
+          <!-- Coluna Esquerda - Dados -->
+          <div class="form-column">
+            
+            <div class="form-section">
+              <h2>
+                <mat-icon>info</mat-icon>
+                Informações Básicas
+              </h2>
+
+              <!-- Nome -->
+              <mat-form-field appearance="outline">
+                <mat-label>Nome do Produto</mat-label>
+                <input matInput formControlName="nome" placeholder="Ex: Bolo de Chocolate">
+                <mat-icon matPrefix>cake</mat-icon>
+                <mat-error *ngIf="produtoForm.get('nome')?.hasError('required')">
+                  Nome é obrigatório
+                </mat-error>
+                <mat-error *ngIf="produtoForm.get('nome')?.hasError('minlength')">
+                  Nome deve ter no mínimo 3 caracteres
+                </mat-error>
+              </mat-form-field>
+
+              <!-- Preço -->
+              <mat-form-field appearance="outline">
+                <mat-label>Preço</mat-label>
+                <input matInput type="number" step="0.01" formControlName="preco" placeholder="0.00">
+                <span matPrefix>R$&nbsp;</span>
+                <mat-error *ngIf="produtoForm.get('preco')?.hasError('required')">
+                  Preço é obrigatório
+                </mat-error>
+                <mat-error *ngIf="produtoForm.get('preco')?.hasError('min')">
+                  Preço deve ser maior que zero
+                </mat-error>
+              </mat-form-field>
+
+              <!-- Categoria -->
+              <mat-form-field appearance="outline">
+                <mat-label>Categoria</mat-label>
+                <mat-select formControlName="categoriaId">
+                  <mat-option *ngFor="let categoria of categorias" [value]="categoria.id">
+                    {{ categoria.nome }}
+                  </mat-option>
+                </mat-select>
+                <mat-icon matPrefix>category</mat-icon>
+                <mat-error *ngIf="produtoForm.get('categoriaId')?.hasError('required')">
+                  Selecione uma categoria
+                </mat-error>
+              </mat-form-field>
+
+              <!-- Ingredientes -->
+              <mat-form-field appearance="outline">
+                <mat-label>Ingredientes</mat-label>
+                <textarea 
+                  matInput 
+                  formControlName="ingredientes" 
+                  rows="4"
+                  placeholder="Descreva os ingredientes do produto">
+                </textarea>
+                <mat-icon matPrefix>restaurant</mat-icon>
+                <mat-error *ngIf="produtoForm.get('ingredientes')?.hasError('required')">
+                  Ingredientes são obrigatórios
+                </mat-error>
+              </mat-form-field>
+
+            </div>
+
+            <div class="form-section">
+              <h2>
+                <mat-icon>settings</mat-icon>
+                Configurações
+              </h2>
+
+              <!-- Disponível -->
+              <div class="checkbox-group">
+                <mat-checkbox formControlName="disponivel">
+                  <strong>Produto Disponível</strong>
+                  <span class="checkbox-hint">O produto estará visível no cardápio</span>
+                </mat-checkbox>
+              </div>
+
+              <!-- Destaque -->
+              <div class="checkbox-group">
+                <mat-checkbox formControlName="destaque">
+                  <strong>Produto em Destaque</strong>
+                  <span class="checkbox-hint">Será exibido na página inicial</span>
+                </mat-checkbox>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Coluna Direita - Imagem -->
+          <div class="form-column">
+            
+            <div class="form-section">
+              <h2>
+                <mat-icon>image</mat-icon>
+                Imagem do Produto
+              </h2>
+
+              <mat-form-field appearance="outline">
+                <mat-label>URL da Imagem</mat-label>
+                <input matInput formControlName="imagemUrl" placeholder="https://exemplo.com/imagem.jpg">
+                <mat-icon matPrefix>link</mat-icon>
+                <mat-error *ngIf="produtoForm.get('imagemUrl')?.hasError('required')">
+                  URL da imagem é obrigatória
+                </mat-error>
+                <mat-error *ngIf="produtoForm.get('imagemUrl')?.hasError('pattern')">
+                  URL inválida. Use .jpg, .png, .gif ou .webp
+                </mat-error>
+              </mat-form-field>
+
+              <!-- Preview da Imagem -->
+              <div class="image-preview">
+                <div class="preview-container" *ngIf="imagemPreview">
+                  <img [src]="imagemPreview" alt="Preview">
+                  <div class="preview-overlay">
+                    <mat-icon>check_circle</mat-icon>
+                    <p>Preview da Imagem</p>
+                  </div>
+                </div>
+
+                <div class="preview-placeholder" *ngIf="!imagemPreview">
+                  <mat-icon>image</mat-icon>
+                  <p>Insira uma URL válida para ver o preview</p>
+                </div>
+              </div>
+
+              <div class="image-hint">
+                <mat-icon>info</mat-icon>
+                <p>Use uma imagem de alta qualidade (mínimo 800x600px) para melhor visualização no cardápio.</p>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- Botões -->
+        <div class="form-actions">
+          <button type="button" mat-stroked-button (click)="cancelar()" [disabled]="loading">
+            <mat-icon>close</mat-icon>
+            Cancelar
+          </button>
+          <button type="submit" mat-raised-button color="primary" [disabled]="loading || produtoForm.invalid">
+            <mat-icon>{{ editando ? 'save' : 'add' }}</mat-icon>
+            {{ loading ? 'Salvando...' : (editando ? 'Salvar Alterações' : 'Adicionar Produto') }}
+          </button>
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+</div>

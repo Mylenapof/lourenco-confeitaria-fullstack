@@ -137,4 +137,22 @@
       height: 28px;
     }
   }
+  .menu-header {
+  padding: 8px 16px !important;
+  
+  .user-role-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 700;
+    background: #E3F2FD;
+    color: #1976D2;
+    
+    &.admin {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+  }
+}
 }

@@ -1,87 +1,156 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatTableModule } from '@angular/material/table';
+import { RouterModule } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
-import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { EncomendaService } from '@services/encomenda.service';
-import { Encomenda } from '@models/encomenda.model';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '@env/environment';
+import { Encomenda, StatusEncomenda } from '@models/encomenda.model';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+
+interface StatusOption {
+  value: StatusEncomenda;
+  label: string;
+  color: string;
+}
 
 @Component({
   selector: 'app-encomendas-admin',
   standalone: true,
   imports: [
     CommonModule,
-    MatTableModule,
+    RouterModule,
+    ReactiveFormsModule,
     MatButtonModule,
     MatIconModule,
     MatChipsModule,
-    MatSelectModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatExpansionModule,
+    MatFormFieldModule,
+    MatInputModule
   ],
   templateUrl: './encomendas-admin.component.html',
   styleUrls: ['./encomendas-admin.component.scss']
 })
 export class EncomendasAdminComponent implements OnInit {
   encomendas: Encomenda[] = [];
+  encomendasFiltradas: Encomenda[] = [];
   loading = true;
-  displayedColumns = ['id', 'cliente', 'tipo', 'dataEntrega', 'status', 'valor', 'acoes'];
+  filtroAtual: string = 'TODOS';
+  orcamentoForm: FormGroup;
+  encomendaOrcamento: Encomenda | null = null;
 
-  statusOptions = [
-    'PENDENTE',
-    'ORCAMENTO_ENVIADO',
-    'APROVADO',
-    'EM_PRODUCAO',
-    'PRONTO',
-    'ENTREGUE',
-    'CANCELADO'
+  statusOptions: StatusOption[] = [
+    { value: StatusEncomenda.PENDENTE, label: 'Pendente', color: 'warning' },
+    { value: StatusEncomenda.ORCAMENTO_ENVIADO, label: 'Orçamento Enviado', color: 'info' },
+    { value: StatusEncomenda.APROVADO, label: 'Aprovado', color: 'success' },
+    { value: StatusEncomenda.EM_PRODUCAO, label: 'Em Produção', color: 'primary' },
+    { value: StatusEncomenda.PRONTO, label: 'Pronto', color: 'success' },
+    { value: StatusEncomenda.ENTREGUE, label: 'Entregue', color: 'success' },
+    { value: StatusEncomenda.CANCELADO, label: 'Cancelado', color: 'error' }
   ];
 
   constructor(
-    private encomendaService: EncomendaService,
-    private snackBar: MatSnackBar
-  ) {}
+    private http: HttpClient,
+    private snackBar: MatSnackBar,
+    private fb: FormBuilder
+  ) {
+    this.orcamentoForm = this.fb.group({
+      valorEstimado: ['', [Validators.required, Validators.min(0.01)]]
+    });
+  }
 
   ngOnInit() {
     this.carregarEncomendas();
   }
 
   carregarEncomendas() {
-    this.encomendaService.listarTodas().subscribe({
+    this.loading = true;
+    this.http.get<Encomenda[]>(`${environment.apiUrl}/encomendas`).subscribe({
       next: (encomendas) => {
-        this.encomendas = encomendas;
+        this.encomendas = encomendas.sort((a, b) => 
+          new Date(b.dataEntrega).getTime() - new Date(a.dataEntrega).getTime()
+        );
+        this.aplicarFiltro('TODOS');
         this.loading = false;
       },
       error: (err) => {
         console.error('Erro ao carregar encomendas:', err);
+        this.snackBar.open('Erro ao carregar encomendas', 'OK', { duration: 3000 });
         this.loading = false;
       }
     });
   }
 
-  atualizarStatus(id: string, novoStatus: string) {
-    this.encomendaService.atualizarStatus(id, novoStatus).subscribe({
-      next: () => {
-        this.snackBar.open('Status atualizado!', 'OK', {
-          duration: 3000,
-          panelClass: ['snackbar-success']
-        });
-        this.carregarEncomendas();
-      },
-      error: (err) => {
-        console.error('Erro ao atualizar status:', err);
-        this.snackBar.open('Erro ao atualizar status', 'OK', {
-          duration: 3000,
-          panelClass: ['snackbar-error']
-        });
-      }
+  aplicarFiltro(status: string) {
+    this.filtroAtual = status;
+    if (status === 'TODOS') {
+      this.encomendasFiltradas = this.encomendas;
+    } else {
+      this.encomendasFiltradas = this.encomendas.filter(e => e.status === status);
+    }
+  }
+
+  contarPorStatus(status: string): number {
+    if (status === 'TODOS') return this.encomendas.length;
+    return this.encomendas.filter(e => e.status === status).length;
+  }
+
+  abrirFormularioOrcamento(encomenda: Encomenda) {
+    this.encomendaOrcamento = encomenda;
+    this.orcamentoForm.patchValue({
+      valorEstimado: encomenda.valorEstimado || ''
     });
   }
 
+  enviarOrcamento() {
+    if (this.orcamentoForm.valid && this.encomendaOrcamento) {
+      const valorEstimado = this.orcamentoForm.value.valorEstimado;
+      
+      this.http.put(`${environment.apiUrl}/encomendas/${this.encomendaOrcamento.id}`, {
+        ...this.encomendaOrcamento,
+        valorEstimado: parseFloat(valorEstimado),
+        status: StatusEncomenda.ORCAMENTO_ENVIADO
+      }).subscribe({
+        next: () => {
+          this.snackBar.open('Orçamento enviado com sucesso!', 'OK', { duration: 3000 });
+          this.encomendaOrcamento = null;
+          this.orcamentoForm.reset();
+          this.carregarEncomendas();
+        },
+        error: (err) => {
+          console.error('Erro ao enviar orçamento:', err);
+          this.snackBar.open('Erro ao enviar orçamento', 'OK', { duration: 3000 });
+        }
+      });
+    }
+  }
+
+  atualizarStatus(encomenda: Encomenda, novoStatus: StatusEncomenda) {
+    this.http.patch(`${environment.apiUrl}/encomendas/${encomenda.id}/status`, { status: novoStatus })
+      .subscribe({
+        next: () => {
+          const index = this.encomendas.findIndex(e => e.id === encomenda.id);
+          if (index !== -1) {
+            this.encomendas[index].status = novoStatus;
+            this.aplicarFiltro(this.filtroAtual);
+          }
+          this.snackBar.open('Status atualizado com sucesso', 'OK', { duration: 3000 });
+        },
+        error: (err) => {
+          console.error('Erro ao atualizar status:', err);
+          this.snackBar.open('Erro ao atualizar status', 'OK', { duration: 3000 });
+        }
+      });
+  }
+
   getStatusClass(status: string): string {
-    const map: any = {
+    const statusMap: any = {
       'PENDENTE': 'status-pendente',
       'ORCAMENTO_ENVIADO': 'status-orcamento',
       'APROVADO': 'status-aprovado',
@@ -90,11 +159,11 @@ export class EncomendasAdminComponent implements OnInit {
       'ENTREGUE': 'status-entregue',
       'CANCELADO': 'status-cancelado'
     };
-    return map[status] || '';
+    return statusMap[status] || '';
   }
 
-  getStatusTexto(status: string): string {
-    const map: any = {
+  getStatusLabel(status: string): string {
+    const statusMap: any = {
       'PENDENTE': 'Pendente',
       'ORCAMENTO_ENVIADO': 'Orçamento Enviado',
       'APROVADO': 'Aprovado',
@@ -103,11 +172,20 @@ export class EncomendasAdminComponent implements OnInit {
       'ENTREGUE': 'Entregue',
       'CANCELADO': 'Cancelado'
     };
-    return map[status] || status;
+    return statusMap[status] || status;
   }
 
-  // MÉTODO NOVO — EVITA O ERRO DO ANGULAR
-  getPendentes(): number {
-    return this.encomendas?.filter(e => e.status === 'PENDENTE').length ?? 0;
+  calcularDiasRestantes(dataEntrega: string): number {
+    const hoje = new Date();
+    const entrega = new Date(dataEntrega);
+    const diff = entrega.getTime() - hoje.getTime();
+    return Math.ceil(diff / (1000 * 3600 * 24));
+  }
+
+  getUrgenciaClass(dias: number): string {
+    if (dias < 0) return 'urgencia-atrasado';
+    if (dias <= 2) return 'urgencia-urgente';
+    if (dias <= 5) return 'urgencia-proximo';
+    return 'urgencia-normal';
   }
 }
