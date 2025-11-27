@@ -16,9 +16,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -88,7 +90,6 @@ public ResponseEntity<?> login(@Valid @RequestBody LoginDTO dto) {
     try {
         System.out.println("\n=== TENTATIVA DE LOGIN ===");
         System.out.println("📧 Email: " + dto.getEmail());
-        System.out.println("🔐 Senha: " + dto.getSenha());
         
         // Verificar se usuário existe
         Usuario usuario = usuarioRepository.findByEmail(dto.getEmail())
@@ -96,51 +97,28 @@ public ResponseEntity<?> login(@Valid @RequestBody LoginDTO dto) {
         
         System.out.println("👤 Usuário encontrado: " + usuario.getNome());
         System.out.println("🎭 Role do usuário: " + usuario.getRole());
-        System.out.println("✅ Usuário ativo: " + usuario.getAtivo());
         
         // Testar senha manualmente
         boolean senhaCorreta = passwordEncoder.matches(dto.getSenha(), usuario.getSenha());
-        System.out.println("🔑 Senha correta (verificação manual): " + senhaCorreta);
+        System.out.println("🔑 Senha correta: " + senhaCorreta);
         
         if (!senhaCorreta) {
-            System.err.println("❌ SENHA INCORRETA - verificação manual falhou");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("error", "Senha incorreta"));
         }
         
-        // Tentar autenticação pelo Spring Security
-        System.out.println("🔐 Tentando autenticação pelo Spring Security...");
-        
-        Authentication authentication;
-        try {
-            authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getSenha())
-            );
-            System.out.println("✅ Autenticação pelo Spring Security OK");
-        } catch (BadCredentialsException e) {
-            System.err.println("❌ BadCredentialsException: " + e.getMessage());
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "Credenciais inválidas - Spring Security rejeitou"));
-        } catch (Exception e) {
-            System.err.println("❌ Erro na autenticação: " + e.getClass().getName());
-            System.err.println("❌ Mensagem: " + e.getMessage());
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(Map.of("error", "Erro na autenticação: " + e.getMessage()));
-        }
+        // Autenticação pelo Spring Security
+        Authentication authentication = authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(dto.getEmail(), dto.getSenha())
+        );
 
         String username = authentication.getName();
-        String token = jwtUtil.generateToken(username);
         
-        String authorities = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
-
+        // 🔹 MUDANÇA AQUI: Passar a role ao gerar o token
+        String token = jwtUtil.generateToken(username, usuario.getRole());
+        
         System.out.println("✅ Login bem-sucedido para: " + username);
-        System.out.println("🎫 Token gerado");
-        System.out.println("🔑 Authorities: " + authorities);
-        System.out.println("======================\n");
+        System.out.println("🎫 Token gerado com role: " + usuario.getRole());
 
         return ResponseEntity.ok(Map.of(
             "message", "Login realizado com sucesso",
@@ -150,45 +128,10 @@ public ResponseEntity<?> login(@Valid @RequestBody LoginDTO dto) {
         ));
 
     } catch (Exception e) {
-        System.err.println("❌ Erro inesperado no login: " + e.getMessage());
+        System.err.println("❌ Erro no login: " + e.getMessage());
         e.printStackTrace();
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Map.of("error", "Erro no servidor: " + e.getMessage()));
-    }
-}
-
-    @PostMapping("/verificar-senha")
-public ResponseEntity<?> verificarSenha(@RequestBody Map<String, String> dados) {
-    try {
-        String email = dados.get("email");
-        String senhaDigitada = dados.get("senha");
-        
-        Usuario usuario = usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-        
-        boolean senhaCorreta = passwordEncoder.matches(senhaDigitada, usuario.getSenha());
-        
-        System.out.println("=================================");
-        System.out.println("📧 Email: " + email);
-        System.out.println("🔐 Senha digitada: " + senhaDigitada);
-        System.out.println("🔒 Senha do banco (início): " + usuario.getSenha().substring(0, 30));
-        System.out.println("✅ Senha está correta? " + senhaCorreta);
-        System.out.println("👤 Role: " + usuario.getRole());
-        System.out.println("🟢 Ativo: " + usuario.getAtivo());
-        System.out.println("=================================");
-        
-        return ResponseEntity.ok(Map.of(
-            "email", email,
-            "senhaDigitadaMatches", senhaCorreta,
-            "role", usuario.getRole(),
-            "ativo", usuario.getAtivo(),
-            "senhaHash20chars", usuario.getSenha().substring(0, 20)
-        ));
-        
-    } catch (Exception e) {
-        e.printStackTrace();
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("error", e.getMessage()));
     }
 }
 @PostMapping("/resetar-senha")
@@ -231,4 +174,72 @@ public ResponseEntity<?> resetarSenha(@RequestBody Map<String, String> dados) {
                 .body(Map.of("error", e.getMessage()));
     }
 }
+// ========== ENDPOINT DE DEBUG - TEMPORÁRIO ==========
+@GetMapping("/debug-token")
+public ResponseEntity<?> debugToken(@RequestHeader(value = "Authorization", required = false) String authHeader) {
+    Map<String, Object> debug = new HashMap<>();
+    
+    System.out.println("\n========== DEBUG TOKEN ==========");
+    System.out.println("Header recebido: " + authHeader);
+    
+    if (authHeader == null) {
+        debug.put("status", "NO_HEADER");
+        debug.put("message", "Nenhum header Authorization foi enviado");
+        System.out.println("❌ Nenhum header enviado");
+        return ResponseEntity.ok(debug);
+    }
+    
+    debug.put("headerReceived", authHeader);
+    
+    if (!authHeader.startsWith("Bearer ")) {
+        debug.put("status", "INVALID_FORMAT");
+        debug.put("message", "Header não começa com 'Bearer '");
+        System.out.println("❌ Header não começa com Bearer");
+        return ResponseEntity.ok(debug);
+    }
+    
+    String token = authHeader.substring(7);
+    debug.put("tokenLength", token.length());
+    debug.put("tokenPrefix", token.substring(0, Math.min(20, token.length())));
+    
+    System.out.println("Token recebido (20 primeiros chars): " + token.substring(0, Math.min(20, token.length())));
+    
+    try {
+        String username = jwtUtil.extractUsername(token);
+        String role = jwtUtil.extractRole(token);
+        boolean isValid = jwtUtil.validateToken(token);
+        
+        System.out.println("✅ Username: " + username);
+        System.out.println("✅ Role: " + role);
+        System.out.println("✅ Valid: " + isValid);
+        
+        debug.put("status", "SUCCESS");
+        debug.put("username", username);
+        debug.put("role", role);
+        debug.put("isValid", isValid);
+        
+        // Verificar o SecurityContext atual
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null) {
+            debug.put("securityContextUsername", auth.getName());
+            debug.put("securityContextAuthorities", auth.getAuthorities().toString());
+            System.out.println("✅ SecurityContext username: " + auth.getName());
+            System.out.println("✅ SecurityContext authorities: " + auth.getAuthorities());
+        } else {
+            debug.put("securityContext", "NULL");
+            System.out.println("❌ SecurityContext está NULL");
+        }
+        
+        System.out.println("==================================\n");
+        
+    } catch (Exception e) {
+        debug.put("status", "ERROR");
+        debug.put("error", e.getMessage());
+        System.err.println("❌ Erro ao processar token: " + e.getMessage());
+        e.printStackTrace();
+    }
+    
+    return ResponseEntity.ok(debug);
+}
+
 }

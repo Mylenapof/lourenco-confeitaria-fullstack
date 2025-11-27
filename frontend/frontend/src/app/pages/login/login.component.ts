@@ -40,30 +40,40 @@ export class LoginComponent {
     });
   }
 
-onSubmit() {
-  if (this.loginForm.valid) {
-    this.loading = true;
-    this.errorMessage = '';
+  onSubmit() {
+    if (this.loginForm.valid) {
+      this.loading = true;
+      this.errorMessage = '';
 
-    this.authService.login(this.loginForm.value).subscribe({
-      next: (response) => {
-        console.log('Login realizado:', response);
-        
-        // 🔹 REDIRECIONAR BASEADO NA ROLE
-        setTimeout(() => {
-          if (this.authService.isAdmin()) {
-            this.router.navigate(['/admin/dashboard']);
-          } else {
-            this.router.navigate(['/']);
-          }
-        }, 500);
-      },
-      error: (error) => {
-        console.error('Erro no login:', error);
-        this.errorMessage = 'Email ou senha inválidos';
-        this.loading = false;
-      }
-    });
+      this.authService.login(this.loginForm.value).subscribe({
+        next: (response) => {
+          console.log('✅ Login concluído');
+          
+          // 🔹 AGUARDAR UM POUCO PARA O TOKEN SER PROCESSADO
+          setTimeout(() => {
+            const isAdmin = this.authService.isAdmin();
+            
+            if (isAdmin) {
+              console.log('🎯 Redirecionando para admin...');
+              this.router.navigate(['/admin/dashboard']).then(() => {
+                console.log('✅ Navegação concluída');
+                this.loading = false;
+              });
+            } else {
+              console.log('🎯 Redirecionando para home...');
+              this.router.navigate(['/']).then(() => {
+                console.log('✅ Navegação concluída');
+                this.loading = false;
+              });
+            }
+          }, 500);
+        },
+        error: (error) => {
+          console.error('❌ Erro no login:', error);
+          this.errorMessage = 'Email ou senha inválidos';
+          this.loading = false;
+        }
+      });
+    }
   }
-}
 }

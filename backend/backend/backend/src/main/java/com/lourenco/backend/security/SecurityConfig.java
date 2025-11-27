@@ -1,5 +1,4 @@
 package com.lourenco.backend.security;
-
 import java.util.Arrays;
 
 import org.springframework.context.annotation.Bean;
@@ -27,27 +26,19 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/auth/**", "/produtos/**", "/categorias/**", "/files/download/**", "/encomendas").permitAll()
+                    .requestMatchers("/auth/login", "/auth/register", "/produtos/**", "/categorias/**", "/files/download/**", "/encomendas").permitAll()
                     .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // 🔹 IMPORTANTE
                 .build();
     }
 
-    // ✅ CORREÇÃO CORS DEFINITIVA
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        
-        // 🔑 Usamos setAllowedOriginPatterns para permitir curingas com allowCredentials=true
         configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:*", "http://127.0.0.1:*"));
-        
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        
-        // Headers necessários para JWT
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept"));
-        
-        // Necessário para JWT e Cookies
         configuration.setAllowCredentials(true); 
         
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

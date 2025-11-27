@@ -14,9 +14,12 @@ export interface LoginRequest {
   senha: string;
 }
 
+// 🔹 ATUALIZADO: Adicionar nome e role
 export interface LoginResponse {
   message: string;
   token: string;
+  nome?: string;      // 🔹 ADICIONAR
+  role?: string;      // 🔹 ADICIONAR
 }
 
 export interface RegistroRequest {
