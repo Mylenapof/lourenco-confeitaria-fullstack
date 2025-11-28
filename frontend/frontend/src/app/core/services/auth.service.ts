@@ -1,7 +1,6 @@
-import { Injectable, PLATFORM_ID, inject } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap, delay } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { Router } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
 import { environment } from '@env/environment';
@@ -21,17 +20,13 @@ export class AuthService {
   private usuariosUrl = `${environment.apiUrl}/usuarios`;
   private currentUserSubject = new BehaviorSubject<Usuario | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
-  private platformId = inject(PLATFORM_ID);
-  private isBrowser: boolean;
 
   constructor(
     private http: HttpClient,
     private router: Router
   ) {
-    this.isBrowser = isPlatformBrowser(this.platformId);
-    if (this.isBrowser) {
-      this.loadUserFromToken();
-    }
+    console.log('🌐 AuthService inicializado');
+    this.loadUserFromToken();
   }
 
   register(data: RegistroRequest): Observable<any> {
@@ -43,18 +38,21 @@ export class AuthService {
       tap(response => {
         console.log('✅ Login response:', response);
         
-        if (this.isBrowser && response.token) {
-          // 🔹 SALVAR TOKEN IMEDIATAMENTE E SINCRONAMENTE
+        if (response.token) {
+          // Salvar token
           localStorage.setItem('token', response.token);
           console.log('💾 Token salvo no localStorage');
           
-          // 🔹 DECODIFICAR E CRIAR USUÁRIO IMEDIATAMENTE
+          // Verificar
+          const verificacao = localStorage.getItem('token');
+          console.log('🔍 Token salvo com sucesso:', !!verificacao);
+          
+          // Decodificar
           try {
             const decoded: DecodedToken = jwtDecode(response.token);
             
-            // 🔹 CRIAR USUÁRIO COM DADOS DA RESPOSTA E DO TOKEN
             const usuario: Usuario = {
-              id: '', // Será atualizado depois
+              id: '',
               nome: response.nome || decoded.sub,
               email: decoded.sub,
               role: response.role || decoded.role || 'USER',
@@ -62,20 +60,17 @@ export class AuthService {
             };
             
             console.log('👤 Usuário criado:', usuario);
-            console.log('🎭 Role do usuário:', usuario.role);
+            console.log('🎭 Role:', usuario.role);
             
-            // 🔹 ATUALIZAR IMEDIATAMENTE
             this.currentUserSubject.next(usuario);
             
-            // 🔹 BUSCAR DADOS COMPLETOS EM BACKGROUND (SEM BLOQUEAR)
+            // Buscar dados completos
             this.http.get<Usuario>(`${this.usuariosUrl}/me`).subscribe({
               next: (usuarioCompleto) => {
-                console.log('📥 Dados completos recebidos:', usuarioCompleto);
+                console.log('📥 Dados completos:', usuarioCompleto);
                 this.currentUserSubject.next(usuarioCompleto);
               },
-              error: (err) => {
-                console.warn('⚠️ Não foi possível carregar dados completos, mantendo usuário do token');
-              }
+              error: () => console.warn('⚠️ Erro ao carregar dados completos')
             });
             
           } catch (error) {
@@ -87,44 +82,30 @@ export class AuthService {
   }
 
   logout(): void {
-    if (this.isBrowser) {
-      localStorage.removeItem('token');
-      console.log('🗑️ Token removido do localStorage');
-    }
+    localStorage.removeItem('token');
+    console.log('🗑️ Token removido');
     this.currentUserSubject.next(null);
     this.router.navigate(['/login']);
   }
 
   getToken(): string | null {
-    if (this.isBrowser) {
-      const token = localStorage.getItem('token');
-      if (token) {
-        console.log('🎫 Token recuperado do localStorage (primeiros 20 chars):', token.substring(0, 20));
-      }
-      return token;
+    const token = localStorage.getItem('token');
+    if (token) {
+      console.log('🎫 Token recuperado (20 chars):', token.substring(0, 20));
+    } else {
+      console.log('⚠️ Nenhum token no localStorage');
     }
-    return null;
+    return token;
   }
 
   isAuthenticated(): boolean {
-    if (!this.isBrowser) return false;
-    
     const token = this.getToken();
-    if (!token) {
-      console.log('⚠️ Nenhum token encontrado - não autenticado');
-      return false;
-    }
+    if (!token) return false;
 
     try {
       const decoded: DecodedToken = jwtDecode(token);
       const isExpired = decoded.exp * 1000 < Date.now();
-      
-      if (isExpired) {
-        console.log('⏰ Token expirado');
-      } else {
-        console.log('✅ Token válido');
-      }
-      
+      console.log('🔒 Token válido:', !isExpired);
       return !isExpired;
     } catch {
       console.log('❌ Token inválido');
@@ -135,7 +116,7 @@ export class AuthService {
   isAdmin(): boolean {
     const user = this.currentUserSubject.value;
     const isAdmin = user?.role === 'ADMIN';
-    console.log('🔍 Verificando admin - Role:', user?.role, '- É admin?', isAdmin);
+    console.log('🔍 isAdmin - Role:', user?.role, '- Resultado:', isAdmin);
     return isAdmin;
   }
 
@@ -144,34 +125,26 @@ export class AuthService {
   }
 
   private loadUserFromToken(): void {
-    if (!this.isBrowser) return;
-    
     const token = this.getToken();
     
     if (token && this.isAuthenticated()) {
       try {
         const decoded: DecodedToken = jwtDecode(token);
+        console.log('🔄 Carregando usuário do token:', decoded.sub);
         
-        console.log('🔍 Carregando usuário do token:', decoded.sub);
-        
-        // 🔹 BUSCAR DADOS COMPLETOS
         this.http.get<Usuario>(`${this.usuariosUrl}/me`).subscribe({
           next: (usuario) => {
             console.log('👤 Usuário carregado:', usuario);
-            console.log('🎭 Role:', usuario.role);
             
-            // 🔹 GARANTIR QUE A ROLE ESTÁ CORRETA
             if (!usuario.role && decoded.role) {
               usuario.role = decoded.role;
             }
             
             this.currentUserSubject.next(usuario);
           },
-          error: (err) => {
-            console.error('❌ Erro ao carregar usuário:', err);
-            
-            // 🔹 CRIAR USUÁRIO TEMPORÁRIO DO TOKEN
-            if (decoded.sub && decoded.role) {
+          error: () => {
+            // Usar dados do token
+            if (decoded.role) {
               const tempUser: Usuario = {
                 id: '',
                 nome: decoded.sub,
@@ -179,18 +152,15 @@ export class AuthService {
                 role: decoded.role,
                 ativo: true
               };
-              
-              console.log('⚠️ Usando usuário temporário do token:', tempUser);
+              console.log('⚠️ Usando usuário temporário:', tempUser);
               this.currentUserSubject.next(tempUser);
             }
           }
         });
       } catch (error) {
-        console.error('❌ Erro ao decodificar token:', error);
+        console.error('❌ Erro ao carregar token:', error);
         this.logout();
       }
-    } else {
-      console.log('⚠️ Nenhum token válido encontrado ao inicializar');
     }
   }
 }

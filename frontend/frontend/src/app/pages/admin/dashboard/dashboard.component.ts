@@ -46,18 +46,24 @@ export class DashboardComponent implements OnInit {
   ngOnInit() {
     this.carregarDashboard();
   }
+carregarDashboard() {
+  const token = localStorage.getItem('token');
 
-  carregarDashboard() {
-    this.http.get<DashboardStats>(`${environment.apiUrl}/relatorios/dashboard`)
-      .subscribe({
-        next: (data) => {
-          this.stats = data;
-          this.loading = false;
-        },
-        error: (err) => {
-          console.error('Erro ao carregar dashboard:', err);
-          this.loading = false;
-        }
-      });
-  }
+  this.http.get<DashboardStats>(
+    `${environment.apiUrl}/relatorios/dashboard`,
+    {
+      headers: { Authorization: `Bearer ${token}` }
+    }
+  ).subscribe({
+    next: (data) => {
+      this.stats = data;
+      this.loading = false;
+      console.log('📊 Dados do Dashboard RECEBIDOS:', data);
+    },
+    error: (err) => {
+      console.error('❌ Erro ao carregar dashboard:', err);
+      this.loading = false;
+    }
+  });
+}
 }

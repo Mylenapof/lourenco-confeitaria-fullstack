@@ -57,9 +57,10 @@ public class EncomendaController {
     }
 
     @PostMapping
-    public Encomenda criar(@RequestBody Encomenda encomenda) {
-        return encomendaService.criar(encomenda);
-    }
+// ✅ SEM @PreAuthorize - qualquer um pode criar
+public Encomenda criar(@RequestBody Encomenda encomenda) {
+    return encomendaService.criar(encomenda);
+}
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")

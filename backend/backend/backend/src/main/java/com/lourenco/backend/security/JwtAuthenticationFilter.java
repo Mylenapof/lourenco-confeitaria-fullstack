@@ -35,14 +35,14 @@ public class JwtAuthenticationFilter extends GenericFilter {
         
         System.out.println("\n🔍 FILTRO JWT - Path: " + path);
         
-        // 🔹 MUDANÇA: Pular apenas login e register
-        if (path.equals("/auth/login") || path.equals("/auth/register") || 
-            path.startsWith("/produtos") || path.startsWith("/categorias") || 
-            path.startsWith("/files/download/") || path.equals("/encomendas")) {
-            System.out.println("⏭️ Pulando autenticação para rota pública");
-            chain.doFilter(request, response);
-            return;
-        }
+   if (path.equals("/auth/login") || path.equals("/auth/register") || 
+    path.startsWith("/produtos") || path.startsWith("/categorias") || 
+    path.startsWith("/files/download/") ||
+    (path.equals("/encomendas") && req.getMethod().equals("POST"))) { // ✅ Apenas POST público
+    chain.doFilter(request, response);
+    return;
+}
+
 
         String authHeader = req.getHeader("Authorization");
         System.out.println("📋 Header Authorization: " + (authHeader != null ? "presente" : "ausente"));

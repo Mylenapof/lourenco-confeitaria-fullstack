@@ -10,10 +10,15 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   
   // 🔹 PEGAR TOKEN
   const token = authService.getToken();
-  
+
   console.log('🔐 Interceptor - URL:', req.url);
   console.log('🎫 Interceptor - Token presente?', !!token);
-  
+
+  // 🔹 DEBUG: Mostrar primeiros 20 chars do token
+  if (token) {
+    console.log('🎫 Token (primeiros 20):', token.substring(0, 20));
+  }
+
   // 🔹 SE TEM TOKEN, ADICIONAR NO HEADER
   if (token) {
     req = req.clone({
@@ -21,9 +26,11 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         Authorization: `Bearer ${token}`
       }
     });
-    console.log('✅ Token adicionado ao header');
+
+    console.log('✅ Token adicionado ao header Authorization');
+    console.log('📤 Request headers:', req.headers.get('Authorization')?.substring(0, 30)); // Debug
   } else {
-    console.log('⚠️ Nenhum token encontrado');
+    console.log('⚠️ Nenhum token encontrado no localStorage');
   }
 
   return next(req).pipe(

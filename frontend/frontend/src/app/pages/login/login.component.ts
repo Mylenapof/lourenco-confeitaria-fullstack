@@ -40,40 +40,51 @@ export class LoginComponent {
     });
   }
 
-  onSubmit() {
-    if (this.loginForm.valid) {
-      this.loading = true;
-      this.errorMessage = '';
+onSubmit() {
+  if (this.loginForm.valid) {
+    this.loading = true;
+    this.errorMessage = '';
 
-      this.authService.login(this.loginForm.value).subscribe({
-        next: (response) => {
-          console.log('✅ Login concluído');
+    this.authService.login(this.loginForm.value).subscribe({
+      next: (response) => {
+        console.log('✅ Login concluído');
+        
+        // 🔹 AUMENTAR DELAY PARA 1 SEGUNDO
+        setTimeout(() => {
+          // Verificar se token está no localStorage
+          const tokenVerificacao = localStorage.getItem('token');
+          console.log('🔍 Token no localStorage antes de redirecionar:', !!tokenVerificacao);
           
-          // 🔹 AGUARDAR UM POUCO PARA O TOKEN SER PROCESSADO
-          setTimeout(() => {
-            const isAdmin = this.authService.isAdmin();
-            
-            if (isAdmin) {
-              console.log('🎯 Redirecionando para admin...');
-              this.router.navigate(['/admin/dashboard']).then(() => {
-                console.log('✅ Navegação concluída');
-                this.loading = false;
-              });
-            } else {
-              console.log('🎯 Redirecionando para home...');
-              this.router.navigate(['/']).then(() => {
-                console.log('✅ Navegação concluída');
-                this.loading = false;
-              });
-            }
-          }, 500);
-        },
-        error: (error) => {
-          console.error('❌ Erro no login:', error);
-          this.errorMessage = 'Email ou senha inválidos';
-          this.loading = false;
-        }
-      });
-    }
+          if (!tokenVerificacao) {
+            console.error('❌ ERRO: Token não está no localStorage após login!');
+            this.errorMessage = 'Erro ao salvar sessão. Tente novamente.';
+            this.loading = false;
+            return;
+          }
+          
+          const isAdmin = this.authService.isAdmin();
+          
+          if (isAdmin) {
+            console.log('🎯 Redirecionando para admin...');
+            this.router.navigate(['/admin/dashboard']).then(() => {
+              console.log('✅ Navegação concluída');
+              this.loading = false;
+            });
+          } else {
+            console.log('🎯 Redirecionando para home...');
+            this.router.navigate(['/']).then(() => {
+              console.log('✅ Navegação concluída');
+              this.loading = false;
+            });
+          }
+        }, 1000); // 🔹 AUMENTADO PARA 1 SEGUNDO
+      },
+      error: (error) => {
+        console.error('❌ Erro no login:', error);
+        this.errorMessage = 'Email ou senha inválidos';
+        this.loading = false;
+      }
+    });
   }
+}
 }

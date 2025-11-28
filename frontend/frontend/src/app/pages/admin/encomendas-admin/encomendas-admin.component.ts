@@ -69,23 +69,28 @@ export class EncomendasAdminComponent implements OnInit {
     this.carregarEncomendas();
   }
 
-  carregarEncomendas() {
-    this.loading = true;
-    this.http.get<Encomenda[]>(`${environment.apiUrl}/encomendas`).subscribe({
-      next: (encomendas) => {
-        this.encomendas = encomendas.sort((a, b) => 
-          new Date(b.dataEntrega).getTime() - new Date(a.dataEntrega).getTime()
-        );
-        this.aplicarFiltro('TODOS');
-        this.loading = false;
-      },
-      error: (err) => {
-        console.error('Erro ao carregar encomendas:', err);
-        this.snackBar.open('Erro ao carregar encomendas', 'OK', { duration: 3000 });
-        this.loading = false;
-      }
-    });
-  }
+ carregarEncomendas() {
+  this.loading = true;
+  const token = localStorage.getItem('token');
+
+  this.http.get<Encomenda[]>(`${environment.apiUrl}/encomendas`, {
+    headers: { Authorization: `Bearer ${token}` }
+  })
+  .subscribe({
+    next: (encomendas) => {
+      this.encomendas = encomendas.sort((a, b) =>
+        new Date(b.dataEntrega).getTime() - new Date(a.dataEntrega).getTime()
+      );
+      this.aplicarFiltro('TODOS');
+      this.loading = false;
+    },
+    error: (err) => {
+      console.error('❌ Erro ao carregar encomendas:', err);
+      this.snackBar.open('Erro ao carregar encomendas', 'OK', { duration: 3000 });
+      this.loading = false;
+    }
+  });
+}
 
   aplicarFiltro(status: string) {
     this.filtroAtual = status;
