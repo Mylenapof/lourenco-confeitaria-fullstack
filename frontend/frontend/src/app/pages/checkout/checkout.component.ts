@@ -97,38 +97,53 @@ export class CheckoutComponent implements OnInit {
   }
 
   finalizarPedido() {
-    if (this.enderecoForm.invalid) {
-      Object.keys(this.enderecoForm.controls).forEach(key => {
-        this.enderecoForm.get(key)?.markAsTouched();
-      });
-      return;
-    }
-
-    const user = this.authService.getCurrentUser();
-    if (!user) return;
-
-    this.processandoPagamento = true;
-
-    const dados = {
-      enderecoEntrega: this.enderecoForm.value.enderecoEntrega,
-      observacoes: this.enderecoForm.value.observacoes || ''
-    };
-
-    this.pedidoService.criarPedidoDoCarrinho(user.id, dados).subscribe({
-      next: (pedido) => {
-        console.log('✅ Pedido criado:', pedido);
-        this.pedidoId = pedido.id;
-
-        // Agora gera PIX
-        this.gerarPagamentoPix(pedido.id);
-      },
-      error: (err) => {
-        console.error('❌ Erro ao criar pedido:', err);
-        this.snackBar.open('Erro ao criar pedido.', 'OK', { duration: 3000 });
-        this.processandoPagamento = false;
-      }
+  if (this.enderecoForm.invalid) {
+    Object.keys(this.enderecoForm.controls).forEach(key => {
+      this.enderecoForm.get(key)?.markAsTouched();
     });
+    return;
   }
+
+  const user = this.authService.getCurrentUser();
+  if (!user) return;
+
+  this.processandoPagamento = true;
+
+  const dados = {
+    enderecoEntrega: this.enderecoForm.value.enderecoEntrega,
+    observacoes: this.enderecoForm.value.observacoes || ''
+  };
+
+  // 🔹 MUDANÇA AQUI: O backend já retorna o PIX direto
+  this.pedidoService.criarPedidoDoCarrinho(user.id, dados).subscribe({
+    next: (pixResponse: any) => {
+      console.log('✅ Resposta do backend:', pixResponse);
+      
+      // 🔹 O backend retorna o PixResponse diretamente
+      this.pedidoId = pixResponse.pedidoId;  // ✅ Pegar do PixResponse
+      this.pixData = pixResponse;
+      this.processandoPagamento = false;
+
+      this.snackBar.open(
+        '✓ Pedido criado! Efetue o pagamento via PIX',
+        'OK',
+        { duration: 4000 }
+      );
+    },
+    error: (err) => {
+      console.error('❌ Erro ao criar pedido:', err);
+      this.snackBar.open('Erro ao criar pedido.', 'OK', { duration: 3000 });
+      this.processandoPagamento = false;
+    }
+  });
+}
+
+// 🔹 REMOVER OU COMENTAR ESTE MÉTODO (não é mais necessário)
+/*
+gerarPagamentoPix(pedidoId: string) {
+  // Não precisa mais deste método
+}
+*/
 
   gerarPagamentoPix(pedidoId: string) {
     this.pagamentoService.gerarPagamentoPix(pedidoId).subscribe({

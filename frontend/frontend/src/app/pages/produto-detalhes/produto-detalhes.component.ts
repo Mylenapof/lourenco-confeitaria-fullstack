@@ -85,6 +85,7 @@ export class ProdutoDetalhesComponent implements OnInit {
 
     this.adicionandoCarrinho = true;
 
+    // 🔥 CORREÇÃO AQUI — backend exige precoUnitario
     this.carrinhoService.adicionarItem(user.id, {
       produtoId: this.produto.id,
       quantidade: this.quantidade

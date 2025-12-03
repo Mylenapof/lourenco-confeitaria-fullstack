@@ -5,6 +5,7 @@ import com.lourenco.backend.dto.ProdutoMaisVendidoDTO;
 import com.lourenco.backend.dto.RelatorioVendasDTO;
 import com.lourenco.backend.model.StatusEncomenda;
 import com.lourenco.backend.model.StatusPedido;
+import com.lourenco.backend.model.Pedido;
 import com.lourenco.backend.repository.*;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +39,14 @@ public class RelatorioService {
         this.encomendaRepository = encomendaRepository;
     }
 
+    // ✅ MÉTODO HELPER: Define quais pedidos devem ser contabilizados
+    private boolean isPedidoFaturavel(Pedido pedido) {
+        return pedido.getStatus() == StatusPedido.CONFIRMADO ||
+               pedido.getStatus() == StatusPedido.EM_PREPARACAO ||
+               pedido.getStatus() == StatusPedido.PRONTO ||
+               pedido.getStatus() == StatusPedido.ENTREGUE;
+    }
+
     public DashboardDTO getDashboard() {
         return DashboardDTO.builder()
                 .totalProdutos(produtoRepository.count())
@@ -61,7 +70,7 @@ public class RelatorioService {
 
     public Double calcularFaturamentoTotal() {
         return pedidoRepository.findAll().stream()
-                .filter(pedido -> pedido.getStatus() == StatusPedido.ENTREGUE)
+                .filter(this::isPedidoFaturavel) // ✅ Usa o método helper
                 .mapToDouble(pedido -> pedido.getValorTotal() != null ? pedido.getValorTotal() : 0.0)
                 .sum();
     }
@@ -70,31 +79,33 @@ public class RelatorioService {
         LocalDateTime inicioMes = LocalDate.now().withDayOfMonth(1).atStartOfDay();
         
         return pedidoRepository.findAll().stream()
-                .filter(pedido -> pedido.getStatus() == StatusPedido.ENTREGUE)
+                .filter(this::isPedidoFaturavel) // ✅ Usa o método helper
                 .filter(pedido -> pedido.getDataPedido().isAfter(inicioMes))
                 .mapToDouble(pedido -> pedido.getValorTotal() != null ? pedido.getValorTotal() : 0.0)
                 .sum();
     }
 
     public Double calcularTicketMedio() {
-        var pedidosEntregues = pedidoRepository.findByStatus(StatusPedido.ENTREGUE);
+        var pedidosFaturados = pedidoRepository.findAll().stream()
+                .filter(this::isPedidoFaturavel) // ✅ Usa o método helper
+                .collect(Collectors.toList());
         
-        if (pedidosEntregues.isEmpty()) {
+        if (pedidosFaturados.isEmpty()) {
             return 0.0;
         }
         
-        double total = pedidosEntregues.stream()
+        double total = pedidosFaturados.stream()
                 .mapToDouble(pedido -> pedido.getValorTotal() != null ? pedido.getValorTotal() : 0.0)
                 .sum();
         
-        return total / pedidosEntregues.size();
+        return total / pedidosFaturados.size();
     }
 
     public List<ProdutoMaisVendidoDTO> getProdutosMaisVendidos(int limite) {
         Map<String, ProdutoMaisVendidoDTO> produtosMap = new HashMap<>();
         
         pedidoRepository.findAll().stream()
-                .filter(pedido -> pedido.getStatus() == StatusPedido.ENTREGUE)
+                .filter(this::isPedidoFaturavel) // ✅ Usa o método helper
                 .flatMap(pedido -> pedido.getItens().stream())
                 .forEach(item -> {
                     String produtoId = item.getProduto().getId().toString();
@@ -139,7 +150,7 @@ public class RelatorioService {
         // Preenche com os dados reais
         pedidoRepository.findAll().stream()
                 .filter(pedido -> pedido.getDataPedido().isAfter(dataInicio))
-                .filter(pedido -> pedido.getStatus() == StatusPedido.ENTREGUE)
+                .filter(this::isPedidoFaturavel) // ✅ Usa o método helper
                 .forEach(pedido -> {
                     LocalDate data = pedido.getDataPedido().toLocalDate();
                     RelatorioVendasDTO dto = vendasPorDia.get(data);
@@ -163,7 +174,7 @@ public class RelatorioService {
         
         pedidoRepository.findAll().stream()
                 .filter(pedido -> pedido.getDataPedido().isAfter(inicio) && pedido.getDataPedido().isBefore(fim))
-                .filter(pedido -> pedido.getStatus() == StatusPedido.ENTREGUE)
+                .filter(this::isPedidoFaturavel) // ✅ Usa o método helper
                 .forEach(pedido -> {
                     LocalDate data = pedido.getDataPedido().toLocalDate();
                     

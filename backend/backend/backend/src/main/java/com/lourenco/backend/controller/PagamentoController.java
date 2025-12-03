@@ -39,7 +39,7 @@ public class PagamentoController {
     }
 
     @PostMapping("/{pagamentoId}/simular-pagamento")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('USER')or hasRole('ADMIN')")
     public Pagamento simularPagamento(@PathVariable UUID pagamentoId) {
         return pagamentoService.simularPagamento(pagamentoId);
     }
