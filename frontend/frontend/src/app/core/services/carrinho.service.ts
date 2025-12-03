@@ -15,31 +15,48 @@ export class CarrinhoService {
   constructor(private http: HttpClient) {}
 
   obterCarrinho(usuarioId: string): Observable<Carrinho> {
-    return this.http.get<Carrinho>(`${this.apiUrl}/usuario/${usuarioId}`).pipe(
+    return this.http.get<Carrinho>(
+      `${this.apiUrl}/usuario/${usuarioId}`,
+      { withCredentials: true }
+    ).pipe(
       tap(carrinho => this.carrinhoSubject.next(carrinho))
     );
   }
 
   adicionarItem(usuarioId: string, item: AdicionarItemRequest): Observable<Carrinho> {
-    return this.http.post<Carrinho>(`${this.apiUrl}/usuario/${usuarioId}/item`, item).pipe(
+    return this.http.post<Carrinho>(
+      `${this.apiUrl}/usuario/${usuarioId}/item`,
+      item,
+      { withCredentials: true }
+    ).pipe(
       tap(carrinho => this.carrinhoSubject.next(carrinho))
     );
   }
 
   atualizarItem(usuarioId: string, itemId: string, data: AtualizarItemRequest): Observable<Carrinho> {
-    return this.http.put<Carrinho>(`${this.apiUrl}/usuario/${usuarioId}/item/${itemId}`, data).pipe(
+    return this.http.put<Carrinho>(
+      `${this.apiUrl}/usuario/${usuarioId}/item/${itemId}`,
+      data,
+      { withCredentials: true }
+    ).pipe(
       tap(carrinho => this.carrinhoSubject.next(carrinho))
     );
   }
 
   removerItem(usuarioId: string, itemId: string): Observable<Carrinho> {
-    return this.http.delete<Carrinho>(`${this.apiUrl}/usuario/${usuarioId}/item/${itemId}`).pipe(
+    return this.http.delete<Carrinho>(
+      `${this.apiUrl}/usuario/${usuarioId}/item/${itemId}`,
+      { withCredentials: true }
+    ).pipe(
       tap(carrinho => this.carrinhoSubject.next(carrinho))
     );
   }
 
   limparCarrinho(usuarioId: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/usuario/${usuarioId}`).pipe(
+    return this.http.delete<void>(
+      `${this.apiUrl}/usuario/${usuarioId}`,
+      { withCredentials: true }
+    ).pipe(
       tap(() => this.carrinhoSubject.next(null))
     );
   }

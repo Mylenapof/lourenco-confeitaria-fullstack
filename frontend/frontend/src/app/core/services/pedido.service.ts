@@ -23,4 +23,7 @@ export class PedidoService {
   criar(pedido: any): Observable<Pedido> {
     return this.http.post<Pedido>(this.apiUrl, pedido);
   }
+  criarPedidoDoCarrinho(usuarioId: string, dados: any): Observable<Pedido> {
+  return this.http.post<Pedido>(`${this.apiUrl}/do-carrinho/usuario/${usuarioId}`, dados);
+}
 }

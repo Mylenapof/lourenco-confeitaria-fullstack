@@ -1,0 +1,304 @@
+.checkout-page {
+  min-height: 100vh;
+  background: #FAFAFA;
+  padding: 40px 0;
+
+  .checkout-header {
+    margin-bottom: 30px;
+
+    .btn-voltar {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: white;
+      border: 2px solid #E0E0E0;
+      padding: 10px 20px;
+      border-radius: 25px;
+      color: var(--text-dark);
+      cursor: pointer;
+      margin-bottom: 20px;
+
+      &:hover {
+        border-color: var(--primary-pink);
+        color: var(--primary-pink);
+      }
+    }
+
+    h1 {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+  }
+
+  .loading {
+    text-align: center;
+    padding: 80px 0;
+
+    mat-spinner {
+      margin: 0 auto 20px;
+    }
+  }
+
+  .checkout-grid {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 30px;
+
+    .form-section {
+      mat-card {
+        padding: 30px;
+
+        h2 {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          font-size: 24px;
+          font-weight: 700;
+          margin-bottom: 25px;
+
+          mat-icon {
+            color: var(--primary-pink);
+          }
+        }
+
+        mat-form-field {
+          width: 100%;
+          margin-bottom: 20px;
+        }
+      }
+    }
+
+    .resumo-section {
+      .resumo-card {
+        padding: 30px;
+        margin-bottom: 20px;
+
+        h2 {
+          font-size: 20px;
+          font-weight: 700;
+          margin-bottom: 20px;
+        }
+
+        .itens-resumo {
+          .item-resumo {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #F0F0F0;
+
+            .item-nome {
+              color: var(--text-dark);
+            }
+
+            .item-valor {
+              font-weight: 600;
+              color: var(--primary-pink);
+            }
+          }
+        }
+
+        .resumo-divider {
+          height: 2px;
+          background: #E0E0E0;
+          margin: 20px 0;
+        }
+
+        .resumo-total {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 25px;
+
+          span {
+            font-size: 18px;
+          }
+
+          strong {
+            font-size: 28px;
+            color: var(--primary-pink);
+          }
+        }
+
+        .btn-block {
+          width: 100%;
+          padding: 16px;
+          font-size: 18px;
+        }
+      }
+
+      .info-box {
+        background: #E3F2FD;
+        padding: 20px;
+        border-radius: 12px;
+        display: flex;
+        gap: 15px;
+
+        mat-icon {
+          color: #2196F3;
+        }
+
+        strong {
+          display: block;
+          margin-bottom: 5px;
+        }
+
+        p {
+          font-size: 14px;
+          color: var(--text-light);
+          margin: 0;
+        }
+      }
+    }
+  }
+
+  // Tela de PIX
+  .pix-section {
+    max-width: 600px;
+    margin: 0 auto;
+
+    .pix-card {
+      padding: 40px;
+
+      .pix-header {
+        text-align: center;
+        margin-bottom: 40px;
+
+        mat-icon {
+          font-size: 64px;
+          width: 64px;
+          height: 64px;
+          color: var(--primary-pink);
+          margin-bottom: 15px;
+        }
+
+        h2 {
+          font-size: 28px;
+          font-weight: 700;
+          margin-bottom: 5px;
+        }
+
+        p {
+          color: var(--text-light);
+        }
+      }
+
+      .pix-content {
+        .qr-code-section {
+          text-align: center;
+          margin-bottom: 30px;
+
+          h3 {
+            font-size: 18px;
+            margin-bottom: 20px;
+          }
+
+          .qr-code {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid #E0E0E0;
+            display: inline-block;
+
+            img {
+              width: 250px;
+              height: 250px;
+            }
+          }
+        }
+
+        .pix-code-section {
+          margin-bottom: 30px;
+
+          h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            text-align: center;
+          }
+
+          .pix-code {
+            display: flex;
+            gap: 10px;
+
+            .pix-input {
+              flex: 1;
+              padding: 15px;
+              border: 2px solid #E0E0E0;
+              border-radius: 8px;
+              font-family: monospace;
+              font-size: 12px;
+            }
+
+            button {
+              padding: 0 20px;
+            }
+          }
+        }
+
+        .pix-info {
+          background: #F5F5F5;
+          padding: 20px;
+          border-radius: 12px;
+          margin-bottom: 30px;
+
+          .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #E0E0E0;
+
+            &:last-child {
+              border-bottom: none;
+            }
+
+            .status-badge {
+              padding: 4px 12px;
+              border-radius: 12px;
+              font-size: 13px;
+              font-weight: 600;
+
+              &.pendente {
+                background: #FFF3E0;
+                color: #F57C00;
+              }
+            }
+
+            .tempo-expiracao {
+              color: #F57C00;
+            }
+          }
+        }
+
+        .teste-section {
+          text-align: center;
+          margin-top: 30px;
+
+          mat-divider {
+            margin-bottom: 20px;
+          }
+
+          .teste-aviso {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: #FF9800;
+            margin-bottom: 15px;
+            font-weight: 600;
+          }
+
+          button {
+            width: 100%;
+            padding: 14px;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 1024px) {
+  .checkout-grid {
+    grid-template-columns: 1fr !important;
+  }
+}

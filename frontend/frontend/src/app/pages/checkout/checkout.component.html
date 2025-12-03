@@ -1,0 +1,180 @@
+<div class="checkout-page">
+  <div class="container">
+    
+    <!-- Header -->
+    <div class="checkout-header">
+      <button class="btn-voltar" routerLink="/carrinho">
+        <mat-icon>arrow_back</mat-icon>
+        Voltar ao Carrinho
+      </button>
+      <h1>Finalizar Pedido</h1>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading" *ngIf="loading">
+      <mat-spinner></mat-spinner>
+      <p>Carregando dados...</p>
+    </div>
+
+    <!-- Conteúdo -->
+    <div class="checkout-content" *ngIf="!loading && !pixData">
+      
+      <div class="checkout-grid">
+        
+        <!-- Formulário -->
+        <div class="form-section">
+          <mat-card>
+            <h2>
+              <mat-icon>local_shipping</mat-icon>
+              Dados de Entrega
+            </h2>
+
+            <form [formGroup]="enderecoForm">
+              <mat-form-field appearance="outline">
+                <mat-label>Endereço de Entrega *</mat-label>
+                <textarea 
+                  matInput 
+                  formControlName="enderecoEntrega"
+                  rows="3"
+                  placeholder="Rua, número, bairro, cidade...">
+                </textarea>
+                <mat-error *ngIf="enderecoForm.get('enderecoEntrega')?.hasError('required')">
+                  Endereço é obrigatório
+                </mat-error>
+                <mat-error *ngIf="enderecoForm.get('enderecoEntrega')?.hasError('minlength')">
+                  Endereço muito curto
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Observações (Opcional)</mat-label>
+                <textarea 
+                  matInput 
+                  formControlName="observacoes"
+                  rows="3"
+                  placeholder="Alguma observação sobre o pedido?">
+                </textarea>
+              </mat-form-field>
+            </form>
+          </mat-card>
+        </div>
+
+        <!-- Resumo -->
+        <div class="resumo-section">
+          <mat-card class="resumo-card">
+            <h2>Resumo do Pedido</h2>
+
+            <div class="itens-resumo">
+              <div class="item-resumo" *ngFor="let item of carrinho?.itens">
+                <span class="item-nome">{{ item.quantidade }}x {{ item.produtoNome }}</span>
+                <span class="item-valor">R$ {{ item.subtotal | number:'1.2-2' }}</span>
+              </div>
+            </div>
+
+            <div class="resumo-divider"></div>
+
+            <div class="resumo-total">
+              <span>Total:</span>
+              <strong>R$ {{ carrinho?.valorTotal | number:'1.2-2' }}</strong>
+            </div>
+
+            <button 
+              class="btn-primary btn-block"
+              (click)="finalizarPedido()"
+              [disabled]="enderecoForm.invalid || processandoPagamento">
+              <mat-icon>payment</mat-icon>
+              {{ processandoPagamento ? 'Processando...' : 'Gerar Pagamento PIX' }}
+            </button>
+          </mat-card>
+
+          <div class="info-box">
+            <mat-icon>info</mat-icon>
+            <div>
+              <strong>Pagamento via PIX</strong>
+              <p>Após gerar o pagamento, você terá 30 minutos para efetuar o pagamento via PIX</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Tela de Pagamento PIX -->
+    <div class="pix-section" *ngIf="pixData">
+      <mat-card class="pix-card">
+        <div class="pix-header">
+          <mat-icon>qr_code_2</mat-icon>
+          <h2>Pagamento via PIX</h2>
+          <p>Pedido #{{ pedidoId?.substring(0, 8) }}</p>
+        </div>
+
+        <div class="pix-content">
+          
+          <!-- QR Code -->
+          <div class="qr-code-section">
+            <h3>Escaneie o QR Code</h3>
+            <div class="qr-code">
+              <img [src]="'data:image/svg+xml;base64,' + pixData.qrCodeBase64" alt="QR Code PIX">
+            </div>
+          </div>
+
+          <!-- Código Copia e Cola -->
+          <div class="pix-code-section">
+            <h3>Ou copie o código</h3>
+            <div class="pix-code">
+              <input 
+                type="text" 
+                [value]="pixData.pixCopiaCola" 
+                readonly 
+                class="pix-input">
+              <button 
+                mat-raised-button 
+                color="primary"
+                (click)="copiarCodigoPix()">
+                <mat-icon>{{ copiado ? 'check' : 'content_copy' }}</mat-icon>
+                {{ copiado ? 'Copiado!' : 'Copiar' }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Informações -->
+          <div class="pix-info">
+            <div class="info-item">
+              <span>Valor:</span>
+              <strong>R$ {{ pixData.valor | number:'1.2-2' }}</strong>
+            </div>
+            <div class="info-item">
+              <span>Status:</span>
+              <span class="status-badge pendente">{{ pixData.status }}</span>
+            </div>
+            <div class="info-item">
+              <span>Expira em:</span>
+              <strong class="tempo-expiracao">{{ calcularTempoRestante() }}</strong>
+            </div>
+          </div>
+
+          <!-- Botão Simular Pagamento (APENAS PARA TESTE) -->
+          <div class="teste-section">
+            <mat-divider></mat-divider>
+            <p class="teste-aviso">
+              <mat-icon>science</mat-icon>
+              Modo de Teste
+            </p>
+            <button 
+              mat-raised-button 
+              color="accent"
+              (click)="simularPagamento()"
+              [disabled]="processandoPagamento">
+              <mat-icon>check_circle</mat-icon>
+              Simular Pagamento Aprovado
+            </button>
+          </div>
+
+        </div>
+
+      </mat-card>
+    </div>
+
+  </div>
+</div>

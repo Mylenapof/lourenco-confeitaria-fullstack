@@ -1,20 +1,304 @@
-.container {
-  width: 90%;
-  margin: auto;
-  text-align: center;
+.relatorios-page {
+  min-height: 100vh;
+  background: #FAFAFA;
+  padding: 40px 0;
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    margin-bottom: 30px;
+
+    h1 {
+      font-size: 32px;
+      font-weight: 700;
+      background: var(--gradient-pink);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 5px;
+    }
+
+    p {
+      color: var(--text-light);
+      font-size: 15px;
+    }
+
+    button {
+      background: var(--gradient-pink);
+      color: white;
+      padding: 14px 28px;
+      font-weight: 600;
+    }
+  }
+
+  .loading-container {
+    text-align: center;
+    padding: 80px 0;
+
+    mat-spinner {
+      margin: 0 auto 20px;
+    }
+
+    p {
+      color: var(--text-light);
+      font-size: 16px;
+    }
+  }
+
+  // Resumo Financeiro
+  .resumo-financeiro {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 30px;
+
+    .stat-card {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 28px;
+      border-radius: 16px;
+      transition: all 0.3s;
+
+      &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      }
+
+      .stat-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        mat-icon {
+          font-size: 36px;
+          width: 36px;
+          height: 36px;
+          color: white;
+        }
+      }
+
+      .stat-info {
+        flex: 1;
+
+        .stat-label {
+          font-size: 14px;
+          color: var(--text-light);
+          margin-bottom: 8px;
+        }
+
+        .stat-value {
+          font-size: 32px;
+          font-weight: 700;
+          background: var(--gradient-pink);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          margin: 0 0 6px 0;
+        }
+
+        .stat-subtitle {
+          font-size: 12px;
+          color: var(--text-light);
+        }
+      }
+
+      &.faturamento-total .stat-icon {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+
+      &.faturamento-mes .stat-icon {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      }
+
+      &.ticket-medio .stat-icon {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      }
+    }
+  }
+
+  // Tabs
+  .relatorios-tabs {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    overflow: hidden;
+
+    .tab-content {
+      padding: 30px;
+    }
+
+    // Filtros
+    .filtros-section {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 30px;
+      padding: 20px;
+      background: #F5F5F5;
+      border-radius: 12px;
+
+      mat-form-field {
+        flex: 1;
+      }
+    }
+
+    .filtro-periodo {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      margin-bottom: 30px;
+      padding: 20px;
+      background: #F5F5F5;
+      border-radius: 12px;
+
+      mat-form-field {
+        flex: 1;
+      }
+
+      button {
+        height: 56px;
+      }
+    }
+
+    // Tabelas
+    .table-container {
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #E0E0E0;
+
+      .relatorio-table {
+        width: 100%;
+
+        th {
+          background: var(--light-pink);
+          color: var(--primary-pink);
+          font-weight: 700;
+          padding: 16px;
+          font-size: 14px;
+        }
+
+        td {
+          padding: 16px;
+          border-bottom: 1px solid #F0F0F0;
+        }
+
+        .posicao-badge {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          background: #E0E0E0;
+          color: var(--text-dark);
+          font-weight: 700;
+
+          &.top-3 {
+            background: var(--gradient-pink);
+            color: white;
+          }
+        }
+
+        .categoria-badge {
+          display: inline-block;
+          background: var(--light-pink);
+          color: var(--primary-pink);
+          padding: 6px 14px;
+          border-radius: 12px;
+          font-size: 13px;
+          font-weight: 600;
+        }
+
+        .qtd-vendida {
+          color: #2196F3;
+          font-size: 15px;
+        }
+
+        .valor-total {
+          color: var(--primary-pink);
+          font-size: 16px;
+        }
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+
+        mat-icon {
+          font-size: 64px;
+          width: 64px;
+          height: 64px;
+          color: #E0E0E0;
+          margin-bottom: 16px;
+        }
+
+        p {
+          color: var(--text-light);
+          font-size: 16px;
+        }
+      }
+    }
+
+    // Resumo do Período
+    .periodo-resumo {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 30px;
+
+      .resumo-card {
+        text-align: center;
+        padding: 24px;
+
+        h3 {
+          font-size: 14px;
+          color: var(--text-light);
+          margin-bottom: 12px;
+          font-weight: 600;
+        }
+
+        .valor-destaque {
+          font-size: 32px;
+          font-weight: 700;
+          color: var(--primary-pink);
+          margin: 0;
+        }
+      }
+    }
+
+    // Info Período
+    .info-periodo {
+      text-align: center;
+      padding: 80px 20px;
+
+      mat-icon {
+        font-size: 80px;
+        width: 80px;
+        height: 80px;
+        color: #E0E0E0;
+        margin-bottom: 20px;
+      }
+
+      p {
+        color: var(--text-light);
+        font-size: 16px;
+      }
+    }
+  }
 }
 
-.cards {
-  display: flex;
-  gap: 16px;
-  justify-content: center;
-  margin-bottom: 20px;
-}
+@media (max-width: 1024px) {
+  .resumo-financeiro {
+    grid-template-columns: 1fr !important;
+  }
 
-.card {
-  background: #fff;
-  padding: 10px 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  font-weight: bold;
+  .periodo-resumo {
+    grid-template-columns: 1fr !important;
+  }
 }

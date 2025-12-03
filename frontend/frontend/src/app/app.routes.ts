@@ -50,6 +50,12 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/carrinho/carrinho.component').then((m) => m.CarrinhoComponent),
   },
+  {
+  path: 'checkout',
+  canActivate: [authGuard],
+  loadComponent: () =>
+    import('./pages/checkout/checkout.component').then((m) => m.CheckoutComponent),
+},
 
   // ==================== ÁREA ADMINISTRATIVA ====================
   {

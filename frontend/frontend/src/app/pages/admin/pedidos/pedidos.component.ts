@@ -63,23 +63,31 @@ export class PedidosComponent implements OnInit {
     this.carregarPedidos();
   }
 
-  carregarPedidos() {
-    this.loading = true;
-    this.http.get<Pedido[]>(`${environment.apiUrl}/pedidos`).subscribe({
-      next: (pedidos) => {
-        this.pedidos = pedidos.sort((a, b) => 
-          new Date(b.dataPedido).getTime() - new Date(a.dataPedido).getTime()
-        );
-        this.aplicarFiltro('TODOS');
-        this.loading = false;
-      },
-      error: (err) => {
-        console.error('Erro ao carregar pedidos:', err);
-        this.snackBar.open('Erro ao carregar pedidos', 'OK', { duration: 3000 });
-        this.loading = false;
-      }
-    });
-  }
+carregarPedidos() {
+  this.loading = true;
+  const token = localStorage.getItem('token'); // 🔹 PEGAR TOKEN
+
+  this.http.get<Pedido[]>(
+    `${environment.apiUrl}/pedidos`,
+    {
+      headers: { Authorization: `Bearer ${token}` } // 🔹 ENVIAR TOKEN
+    }
+  )
+  .subscribe({
+    next: (pedidos) => {
+      this.pedidos = pedidos.sort((a, b) => 
+        new Date(b.dataPedido).getTime() - new Date(a.dataPedido).getTime()
+      );
+      this.aplicarFiltro('TODOS');
+      this.loading = false;
+    },
+    error: (err) => {
+      console.error('❌ Erro ao carregar pedidos:', err);
+      this.snackBar.open('Erro ao carregar pedidos', 'OK', { duration: 3000 });
+      this.loading = false;
+    }
+  });
+}
 
   aplicarFiltro(status: string) {
     this.filtroAtual = status;

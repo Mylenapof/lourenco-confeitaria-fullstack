@@ -96,11 +96,7 @@ export class CarrinhoComponent implements OnInit {
       });
     }
   }
-
-  finalizarPedido() {
-    // Por enquanto, vamos apenas mostrar alert
-    alert('Funcionalidade de checkout em desenvolvimento!');
-    // Depois vamos criar a página de checkout
-    // this.router.navigate(['/checkout']);
-  }
+finalizarPedido() {
+  this.router.navigate(['/checkout']);
+}
 }

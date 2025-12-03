@@ -1,1 +1,318 @@
-<p>relatorios works!</p>
+<div class="relatorios-page">
+  <div class="container">
+    <!-- Header -->
+    <div class="page-header">
+      <div>
+        <h1>Relatórios e Análises</h1>
+        <p>Visualize o desempenho do seu negócio</p>
+      </div>
+      <button mat-raised-button color="primary" (click)="carregarTodosDados()">
+        <mat-icon>refresh</mat-icon>
+        Atualizar Dados
+      </button>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading-container" *ngIf="loading">
+      <mat-spinner></mat-spinner>
+      <p>Carregando relatórios...</p>
+    </div>
+
+    <!-- Conteúdo -->
+    <div class="relatorios-content" *ngIf="!loading">
+      <!-- Cards de Resumo Financeiro -->
+      <div class="resumo-financeiro">
+        <mat-card class="stat-card faturamento-total">
+          <div class="stat-icon">
+            <mat-icon>attach_money</mat-icon>
+          </div>
+          <div class="stat-info">
+            <p class="stat-label">Faturamento Total</p>
+            <h2 class="stat-value">
+              R$ {{ faturamentoTotal | number : "1.2-2" }}
+            </h2>
+            <span class="stat-subtitle">Todos os pedidos entregues</span>
+          </div>
+        </mat-card>
+
+        <mat-card class="stat-card faturamento-mes">
+          <div class="stat-icon">
+            <mat-icon>calendar_today</mat-icon>
+          </div>
+          <div class="stat-info">
+            <p class="stat-label">Faturamento do Mês</p>
+            <h2 class="stat-value">
+              R$ {{ faturamentoMesAtual | number : "1.2-2" }}
+            </h2>
+            <span class="stat-subtitle">Mês atual</span>
+          </div>
+        </mat-card>
+
+        <mat-card class="stat-card ticket-medio">
+          <div class="stat-icon">
+            <mat-icon>receipt_long</mat-icon>
+          </div>
+          <div class="stat-info">
+            <p class="stat-label">Ticket Médio</p>
+            <h2 class="stat-value">R$ {{ ticketMedio | number : "1.2-2" }}</h2>
+            <span class="stat-subtitle">Por pedido</span>
+          </div>
+        </mat-card>
+      </div>
+
+      <!-- Tabs de Relatórios -->
+      <mat-tab-group class="relatorios-tabs">
+        <!-- Tab: Produtos Mais Vendidos -->
+        <mat-tab label="Produtos Mais Vendidos">
+          <div class="tab-content">
+            <!-- Filtro -->
+            <div class="filtros-section">
+              <form [formGroup]="filtroForm">
+                <mat-form-field appearance="outline">
+                  <mat-label>Limite de Produtos</mat-label>
+                  <mat-select
+                    formControlName="limiteProdutos"
+                    (selectionChange)="atualizarLimiteProdutos()"
+                  >
+                    <mat-option [value]="5">Top 5</mat-option>
+                    <mat-option [value]="10">Top 10</mat-option>
+                    <mat-option [value]="20">Top 20</mat-option>
+                    <mat-option [value]="50">Top 50</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </form>
+            </div>
+
+            <!-- Tabela -->
+            <div class="table-container">
+              <table
+                mat-table
+                [dataSource]="produtosMaisVendidos"
+                class="relatorio-table"
+              >
+                <!-- Posição -->
+                <ng-container matColumnDef="posicao">
+                  <th mat-header-cell *matHeaderCellDef>Posição</th>
+                  <td mat-cell *matCellDef="let produto; let i = index">
+                    <span class="posicao-badge" [class.top-3]="i < 3"
+                      >{{ i + 1 }}º</span
+                    >
+                  </td>
+                </ng-container>
+
+                <!-- Produto -->
+                <ng-container matColumnDef="produto">
+                  <th mat-header-cell *matHeaderCellDef>Produto</th>
+                  <td mat-cell *matCellDef="let produto">
+                    <strong>{{ produto.nomeProduto }}</strong>
+                  </td>
+                </ng-container>
+
+                <!-- Categoria -->
+                <ng-container matColumnDef="categoria">
+                  <th mat-header-cell *matHeaderCellDef>Categoria</th>
+                  <td mat-cell *matCellDef="let produto">
+                    <span class="categoria-badge">{{
+                      produto.categoriaNome
+                    }}</span>
+                  </td>
+                </ng-container>
+
+                <!-- Quantidade Vendida -->
+                <ng-container matColumnDef="quantidade">
+                  <th mat-header-cell *matHeaderCellDef>Quantidade Vendida</th>
+                  <td mat-cell *matCellDef="let produto">
+                    <strong class="qtd-vendida"
+                      >{{ produto.quantidadeVendida }} unidades</strong
+                    >
+                  </td>
+                </ng-container>
+
+                <!-- Valor Total -->
+                <ng-container matColumnDef="valorTotal">
+                  <th mat-header-cell *matHeaderCellDef>Valor Total</th>
+                  <td mat-cell *matCellDef="let produto">
+                    <strong class="valor-total"
+                      >R$ {{ produto.valorTotal | number : "1.2-2" }}</strong
+                    >
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="colunasProdutos"></tr>
+                <tr mat-row *matRowDef="let row; columns: colunasProdutos"></tr>
+              </table>
+
+              <!-- Empty State -->
+              <div
+                class="empty-state"
+                *ngIf="produtosMaisVendidos.length === 0"
+              >
+                <mat-icon>inventory_2</mat-icon>
+                <p>Nenhum produto vendido ainda</p>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- Tab: Vendas por Período -->
+        <mat-tab label="Vendas Últimos 30 Dias">
+          <div class="tab-content">
+            <!-- Resumo do Período -->
+            <div class="periodo-resumo">
+              <mat-card class="resumo-card">
+                <h3>Total do Período</h3>
+                <p class="valor-destaque">
+                  R$ {{ calcularTotalVendas() | number : "1.2-2" }}
+                </p>
+              </mat-card>
+
+              <mat-card class="resumo-card">
+                <h3>Média Diária</h3>
+                <p class="valor-destaque">
+                  R$ {{ calcularMediaDiaria() | number : "1.2-2" }}
+                </p>
+              </mat-card>
+
+              <mat-card class="resumo-card">
+                <h3>Total de Pedidos</h3>
+                <p class="valor-destaque">{{ calcularTotalPedidos() }}</p>
+              </mat-card>
+            </div>
+
+            <!-- Tabela de Vendas -->
+            <div class="table-container">
+              <table
+                mat-table
+                [dataSource]="vendasUltimos30Dias"
+                class="relatorio-table"
+              >
+                <!-- Data -->
+                <ng-container matColumnDef="data">
+                  <th mat-header-cell *matHeaderCellDef>Data</th>
+                  <td mat-cell *matCellDef="let venda">
+                    {{ venda.data | date : "dd/MM/yyyy" }}
+                  </td>
+                </ng-container>
+
+                <!-- Total de Pedidos -->
+                <ng-container matColumnDef="totalPedidos">
+                  <th mat-header-cell *matHeaderCellDef>Total de Pedidos</th>
+                  <td mat-cell *matCellDef="let venda">
+                    <strong>{{ venda.totalPedidos }} pedidos</strong>
+                  </td>
+                </ng-container>
+
+                <!-- Valor Total -->
+                <ng-container matColumnDef="valorTotal">
+                  <th mat-header-cell *matHeaderCellDef>Valor Total</th>
+                  <td mat-cell *matCellDef="let venda">
+                    <strong class="valor-total"
+                      >R$ {{ venda.valorTotal | number : "1.2-2" }}</strong
+                    >
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="colunasVendas"></tr>
+                <tr mat-row *matRowDef="let row; columns: colunasVendas"></tr>
+              </table>
+
+              <!-- Empty State -->
+              <div class="empty-state" *ngIf="vendasUltimos30Dias.length === 0">
+                <mat-icon>timeline</mat-icon>
+                <p>Nenhuma venda registrada nos últimos 30 dias</p>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- Tab: Análise Personalizada -->
+        <mat-tab label="Período Personalizado">
+          <div class="tab-content">
+            <!-- Filtros de Data -->
+            <form [formGroup]="filtroForm" class="filtro-periodo">
+              <mat-form-field appearance="outline">
+                <mat-label>Data Inicial</mat-label>
+                <input
+                  matInput
+                  [matDatepicker]="pickerInicio"
+                  formControlName="dataInicio"
+                />
+                <mat-datepicker-toggle
+                  matSuffix
+                  [for]="pickerInicio"
+                ></mat-datepicker-toggle>
+                <mat-datepicker #pickerInicio></mat-datepicker>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Data Final</mat-label>
+                <input
+                  matInput
+                  [matDatepicker]="pickerFim"
+                  formControlName="dataFim"
+                />
+                <mat-datepicker-toggle
+                  matSuffix
+                  [for]="pickerFim"
+                ></mat-datepicker-toggle>
+                <mat-datepicker #pickerFim></mat-datepicker>
+              </mat-form-field>
+
+              <button
+                mat-raised-button
+                color="primary"
+                (click)="buscarVendasPorPeriodo()"
+              >
+                <mat-icon>search</mat-icon>
+                Buscar
+              </button>
+            </form>
+
+            <!-- Resultados -->
+            <div class="resultado-periodo" *ngIf="vendasPorPeriodo.length > 0">
+              <h3>Resultados do Período</h3>
+
+              <div class="table-container">
+                <table
+                  mat-table
+                  [dataSource]="vendasPorPeriodo"
+                  class="relatorio-table"
+                >
+                  <ng-container matColumnDef="data">
+                    <th mat-header-cell *matHeaderCellDef>Data</th>
+                    <td mat-cell *matCellDef="let venda">
+                      {{ venda.data | date : "dd/MM/yyyy" }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="totalPedidos">
+                    <th mat-header-cell *matHeaderCellDef>Pedidos</th>
+                    <td mat-cell *matCellDef="let venda">
+                      {{ venda.totalPedidos }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="valorTotal">
+                    <th mat-header-cell *matHeaderCellDef>Valor Total</th>
+                    <td mat-cell *matCellDef="let venda">
+                      R$ {{ venda.valorTotal | number : "1.2-2" }}
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="colunasVendas"></tr>
+                  <tr mat-row *matRowDef="let row; columns: colunasVendas"></tr>
+                </table>
+              </div>
+            </div>
+
+            <!-- Estado Inicial -->
+            <div class="info-periodo" *ngIf="vendasPorPeriodo.length === 0">
+              <mat-icon>date_range</mat-icon>
+              <p>Selecione um período para visualizar os dados</p>
+            </div>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </div>
+</div>
