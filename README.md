@@ -85,7 +85,6 @@ Sistema completo de e-commerce desenvolvido para a Lourenço Confeitaria, oferec
 
 ### 1. Clone o Repositório
 
-```bash
 git clone [https://github.com/seu-usuario/lourenco-confeitaria.git](https://github.com/seu-usuario/lourenco-confeitaria.git)
 cd lourenco-confeitaria
 cd backend
@@ -98,7 +97,7 @@ npm install
 # Edite src/environments/environment.ts para confirmar a apiUrl.
 ### 8. Execução e Endpoints
 
-```markdown
+
 ## ▶️ Executando o Projeto
 
 ### Iniciar o Backend
@@ -107,7 +106,7 @@ cd backend
 mvn spring-boot:run
 ### 9. Testes e Deploy
 
-```markdown
+
 ## 🧪 Testes
 
 ### Backend
@@ -116,7 +115,7 @@ cd backend
 mvn test
 ### 10. Contribuição, Licença e Contato
 
-```markdown
+
 ## 🔮 Roadmap
 
 * Integração com gateway de pagamento real.
