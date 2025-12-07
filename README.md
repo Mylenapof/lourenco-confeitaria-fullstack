@@ -25,24 +25,7 @@ Sistema completo de e-commerce desenvolvido para a Lourenço Confeitaria, oferec
 14. [Contato](#-contato)
 
 ---
-## 📋 Índice
 
-1.  [Sobre o Projeto](#-sobre-o-projeto)
-2.  [Funcionalidades](#-funcionalidades)
-3.  [Tecnologias Utilizadas](#-tecnologias-utilizadas)
-4.  [Arquitetura](#-arquitetura)
-5.  [Pré-requisitos](#-pr-requisitos)
-6.  [Instalação](#-instalao)
-7.  [Executando o Projeto](#-executando-o-projeto)
-8.  [API Endpoints](#-api-endpoints)
-9.  [Testes](#-testes)
-10. [Deploy](#-deploy)
-11. [Roadmap](#-roadmap)
-12. [Contribuindo](#-contribuindo)
-13. [Licença](#-licena)
-14. [Contato](#-contato)
-
----
 ## ✨ Funcionalidades
 
 ### 👥 Área do Cliente
