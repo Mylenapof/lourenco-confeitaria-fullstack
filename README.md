@@ -5,26 +5,6 @@ Sistema completo de e-commerce para confeitaria com gestão de pedidos, encomend
 
 ---
 
-## 📋 Índice
-
-- [Sobre o Projeto](#sobre-o-projeto)
-- [Funcionalidades](#funcionalidades)
-- [Tecnologias Utilizadas](#tecnologias-utilizadas)
-- [Arquitetura](#arquitetura)
-- [Pré-requisitos](#pré-requisitos)
-- [Instalação](#instalação)
-- [Configuração](#configuração)
-- [Executando o Projeto](#executando-o-projeto)
-- [Estrutura do Projeto](#estrutura-do-projeto)
-- [API Endpoints](#api-endpoints)
-- [Testes](#testes)
-- [Deploy](#deploy)
-- [Contribuindo](#contribuindo)
-- [Licença](#licença)
-- [Contato](#contato)
-
----
-
 ## 📖 Sobre o Projeto
 
 Sistema desenvolvido para modernizar e otimizar a gestão de uma confeitaria artesanal, permitindo que clientes façam pedidos online, solicitem encomendas personalizadas e realizem pagamentos via PIX, enquanto administradores gerenciam todo o negócio através de um painel completo.
@@ -178,53 +158,6 @@ O frontend estará disponível em: [**http://localhost:4200**](http://localhost:
 - **Admin:** Criar via endpoint `/auth/register` com role: "ADMIN"
 - **Cliente:** Cadastrar pela interface
 
----
-## 📁 Estrutura do Projeto
-lourenco-confeitaria/
-│
-├── backend/
-│ ├── src/
-│ │ ├── main/
-│ │ │ ├── java/com/lourenco/backend/
-│ │ │ │ ├── controlador/
-│ │ │ │ ├── serviço/
-│ │ │ │ ├── repositório/
-│ │ │ │ ├── modelo/
-│ │ │ │ ├── dto/
-│ │ │ │ ├── segurança/
-│ │ │ │ ├── config/
-│ │ │ │ └── exceção/
-│ │ │ └── recursos/
-│ │ │ └── application.properties
-│ │ └── test/
-│ └── pom.xml
-│
-├── frontend/
-│ ├── src/
-│ │ ├── app/
-│ │ │ ├── core/
-│ │ │ │ ├── guardas/
-│ │ │ │ ├── interceptadores/
-│ │ │ │ ├── serviços/
-│ │ │ │ └── modelos/
-│ │ │ ├── páginas/
-│ │ │ │ ├── home/
-│ │ │ │ ├── cardapio/
-│ │ │ │ ├──carrinho/
-│ │ │ │ ├── checkout/
-│ │ │ │ ├── admin/
-│ │ │ │ └── ...
-│ │ │ └── components/
-│ │ ├── assets/
-│ │ └── environments/
-│ └── angular.json
-│
-├── docs/
-│ ├── manual-usuario.md
-│ └── api-docs.md
-│
-└── README.md
----
 
 ## 🌐 API Endpoints
 
