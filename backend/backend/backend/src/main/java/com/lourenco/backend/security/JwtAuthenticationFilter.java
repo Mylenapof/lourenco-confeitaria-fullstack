@@ -35,14 +35,17 @@ public class JwtAuthenticationFilter extends GenericFilter {
         
         System.out.println("\n🔍 FILTRO JWT - Path: " + path);
         
-   if (path.equals("/auth/login") || path.equals("/auth/register") || 
-    path.startsWith("/produtos") || path.startsWith("/categorias") || 
-    path.startsWith("/files/download/") ||
-    (path.equals("/encomendas") && req.getMethod().equals("POST"))) { // ✅ Apenas POST público
-    chain.doFilter(request, response);
-    return;
-}
-
+        // Rotas públicas (não precisam de token)
+        if (path.equals("/auth/login") || 
+            path.equals("/auth/register") || 
+            path.startsWith("/files/download/") ||
+            (path.equals("/encomendas") && req.getMethod().equals("POST")) ||
+            (path.startsWith("/produtos") && req.getMethod().equals("GET")) ||
+            (path.startsWith("/categorias") && req.getMethod().equals("GET"))) {
+            
+            chain.doFilter(request, response);
+            return;
+        }
 
         String authHeader = req.getHeader("Authorization");
         System.out.println("📋 Header Authorization: " + (authHeader != null ? "presente" : "ausente"));
@@ -59,7 +62,7 @@ public class JwtAuthenticationFilter extends GenericFilter {
                     System.out.println("👤 Username: " + username);
                     System.out.println("🎭 Role extraída: " + role);
                     
-                    // 🔹 CRIAR AUTHORITIES
+                    // Criar authorities
                     List<GrantedAuthority> authorities = new ArrayList<>();
                     if (role != null) {
                         String authority = role.startsWith("ROLE_") ? role : "ROLE_" + role;
@@ -67,16 +70,16 @@ public class JwtAuthenticationFilter extends GenericFilter {
                         System.out.println("🔑 Authority adicionada: " + authority);
                     }
                     
-                    // 🔹 CRIAR E CONFIGURAR AUTHENTICATION
+                    // Criar e configurar authentication
                     UsernamePasswordAuthenticationToken authentication =
                             new UsernamePasswordAuthenticationToken(username, null, authorities);
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
 
-                    // 🔹 SALVAR NO SECURITY CONTEXT
+                    // Salvar no security context
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                     
                     System.out.println("✅ SecurityContext configurado!");
-                    System.out.println("🔐 Authorities no context: " + SecurityContextHolder.getContext().getAuthentication().getAuthorities());
+                    System.out.println("🔐 Authorities: " + SecurityContextHolder.getContext().getAuthentication().getAuthorities());
                 } else {
                     System.out.println("❌ Token inválido");
                 }

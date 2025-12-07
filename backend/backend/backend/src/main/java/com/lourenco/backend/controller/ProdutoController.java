@@ -1,16 +1,28 @@
 package com.lourenco.backend.controller;
 
-import com.lourenco.backend.dto.ProdutoDTO;
-import com.lourenco.backend.model.Produto;
-import com.lourenco.backend.service.ProdutoService;
-import jakarta.validation.Valid;
+import java.util.List;
+import java.util.UUID;
+
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.UUID;
+import com.lourenco.backend.dto.ProdutoDTO;
+import com.lourenco.backend.model.Produto;
+import com.lourenco.backend.service.ProdutoService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/produtos")
@@ -28,12 +40,12 @@ public class ProdutoController {
     public List listar() {
         return produtoService.listarTodos();
     }
-    
+
     @GetMapping("/disponiveis")
     public List listarDisponiveis() {
         return produtoService.listarDisponiveis();
     }
-    
+
     @GetMapping("/destaques")
     public List listarDestaques() {
         return produtoService.listarDestaques();
@@ -48,7 +60,7 @@ public class ProdutoController {
             @RequestParam(defaultValue = "asc") String direction) {
         return produtoService.listarTodosPaginado(page, size, sortBy, direction);
     }
-    
+
     @GetMapping("/disponiveis/page")
     public Page listarDisponiveisPaginado(
             @RequestParam(defaultValue = "0") int page,
@@ -57,7 +69,7 @@ public class ProdutoController {
             @RequestParam(defaultValue = "asc") String direction) {
         return produtoService.listarDisponiveisPaginado(page, size, sortBy, direction);
     }
-    
+
     @GetMapping("/destaques/page")
     public Page listarDestaquesPaginado(
             @RequestParam(defaultValue = "0") int page,
@@ -66,7 +78,7 @@ public class ProdutoController {
             @RequestParam(defaultValue = "asc") String direction) {
         return produtoService.listarDestaquesPaginado(page, size, sortBy, direction);
     }
-    
+
     @GetMapping("/categoria/{categoriaId}/page")
     public Page listarPorCategoriaPaginado(
             @PathVariable UUID categoriaId,
@@ -96,13 +108,13 @@ public class ProdutoController {
     public Produto atualizar(@PathVariable UUID id, @Valid @RequestBody ProdutoDTO dto) {
         return produtoService.atualizarComDTO(id, dto);
     }
-    
+
     @PatchMapping("/{id}/destaque")
     @PreAuthorize("hasRole('ADMIN')")
     public Produto toggleDestaque(@PathVariable UUID id) {
         return produtoService.toggleDestaque(id);
     }
-    
+
     @PatchMapping("/{id}/disponibilidade")
     @PreAuthorize("hasRole('ADMIN')")
     public Produto toggleDisponibilidade(@PathVariable UUID id) {

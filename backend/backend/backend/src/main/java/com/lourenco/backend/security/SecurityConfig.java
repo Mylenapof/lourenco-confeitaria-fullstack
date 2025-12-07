@@ -3,6 +3,7 @@ import java.util.Arrays;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -27,13 +28,18 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // 🔓 Rotas públicas
+                        // 🔓 Rotas públicas de autenticação
                         .requestMatchers("/auth/login", "/auth/register").permitAll()
-                        .requestMatchers("/produtos/**", "/categorias/**", "/files/download/**").permitAll()
-                        // 🔓 Se quiser deixar criação de encomenda pública:
-                        .requestMatchers("/encomendas").permitAll()
+                        
+                        // 🔓 Rotas públicas de leitura (apenas GET)
+                        .requestMatchers(HttpMethod.GET, "/produtos/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/categorias/**").permitAll()
+                        .requestMatchers("/files/download/**").permitAll()
+                        
+                        // 🔓 Apenas POST de encomenda é público
+                        .requestMatchers(HttpMethod.POST, "/encomendas").permitAll()
 
-                        // 🔐 Qualquer outra rota exige autenticação
+                        // 🔐 TODAS as outras rotas exigem autenticação
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -62,5 +68,5 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-        }
+    }
 }

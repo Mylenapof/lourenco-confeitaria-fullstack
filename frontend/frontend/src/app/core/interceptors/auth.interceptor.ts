@@ -2,44 +2,37 @@ import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
-import { AuthService } from '../services/auth.service';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  const authService = inject(AuthService);
   const router = inject(Router);
   
-  // 🔹 PEGAR TOKEN
-  const token = authService.getToken();
+  // 🔹 PEGAR TOKEN DIRETAMENTE DO LOCALSTORAGE
+  const token = localStorage.getItem('token');
 
   console.log('🔐 Interceptor - URL:', req.url);
-  console.log('🎫 Interceptor - Token presente?', !!token);
+  console.log('🎫 Token presente?', !!token);
 
-  // 🔹 DEBUG: Mostrar primeiros 20 chars do token
+  // 🔹 ADICIONAR TOKEN SE EXISTIR
+  let clonedReq = req;
+  
   if (token) {
-    console.log('🎫 Token (primeiros 20):', token.substring(0, 20));
-  }
-
-  // 🔹 SE TEM TOKEN, ADICIONAR NO HEADER
-  if (token) {
-    req = req.clone({
+    clonedReq = req.clone({
       setHeaders: {
         Authorization: `Bearer ${token}`
       }
     });
-
-    console.log('✅ Token adicionado ao header Authorization');
-    console.log('📤 Request headers:', req.headers.get('Authorization')?.substring(0, 30)); // Debug
+    console.log('✅ Token adicionado ao header');
   } else {
-    console.log('⚠️ Nenhum token encontrado no localStorage');
+    console.log('⚠️ Nenhum token encontrado');
   }
 
-  return next(req).pipe(
+  return next(clonedReq).pipe(
     catchError((error: HttpErrorResponse) => {
       console.error('❌ Erro na requisição:', error.status, error.message);
       
-      if (error.status === 401) {
-        console.log('🚪 Token expirado ou inválido - redirecionando para login');
-        authService.logout();
+      if (error.status === 401 || error.status === 403) {
+        console.log('🚪 Acesso negado - redirecionando para login');
+        localStorage.removeItem('token');
         router.navigate(['/login']);
       }
       
