@@ -29,7 +29,7 @@
 
     button {
       background: var(--gradient-pink);
-      color: #C2185B !important; 
+      color: #C2185B !important;
       padding: 14px 28px;
       font-weight: 600;
       box-shadow: 0 4px 12px rgba(233, 30, 140, 0.3);
@@ -83,10 +83,10 @@
 
         &.active {
           background: var(--gradient-pink);
-  color: #C2185B !important; /* Torna o texto visível */
-  font-weight: 700 !important;
-  border-color: var(--primary-pink);
-  text-shadow: 0 0 3px rgba(255,255,255,0.8);
+          color: #C2185B !important;
+          font-weight: 700 !important;
+          border-color: var(--primary-pink);
+          text-shadow: 0 0 3px rgba(255,255,255,0.8);
         }
       }
     }
@@ -313,7 +313,7 @@
                 background: var(--gradient-pink);
                 color: white;
 
-                &:hover {
+                &:hover:not(:disabled) {
                   transform: translateY(-2px);
                   box-shadow: 0 4px 12px rgba(233, 30, 140, 0.3);
                 }
@@ -324,4 +324,54 @@
       }
     }
   }
+}
+
+/* Botão Enviar Orçamento (ativo) — igual aos outros */
+.btn-orcamento {
+  background: white !important;
+  border: 1px solid #ddd !important;
+  border-radius: 8px !important;
+  padding: 10px 20px !important;
+  font-weight: 600 !important;
+  color: #333 !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+  transition: all .2s ease;
+
+  &:hover:not(:disabled) {
+    background: #f7f7f7 !important;
+    transform: translateY(-2px);
+  }
+}
+
+/* Botão Enviar Orçamento (DESABILITADO) — igual aos outros */
+:host ::ng-deep .btn-orcamento[disabled] {
+  background: #eaeaea !important;
+  border: 1px solid #d5d5d5 !important;
+  color: #888 !important;
+  box-shadow: none !important;
+  opacity: 1 !important;     /* mantém legível */
+  cursor: not-allowed !important;
+}
+
+/* Ajusta o botão Enviar Orçamento para deixar ícone + texto na mesma linha */
+.btn-orcamento {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important; /* espaço entre ícone e texto */
+  white-space: nowrap !important; /* impede quebra de linha */
+  padding: 10px 20px !important;
+  background: white !important;
+  border-radius: 8px !important;
+  border: 1px solid #ddd !important;
+  color: #333 !important;
+  font-weight: 600 !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+}
+
+/* Ícone dentro do botão */
+.btn-orcamento mat-icon {
+  font-size: 18px !important;
+  width: 18px !important;
+  height: 18px !important;
 }

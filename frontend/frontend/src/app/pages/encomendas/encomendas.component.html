@@ -8,7 +8,10 @@
 
   <div class="container">
     <div class="encomendas-content">
-      <!-- Tipos de Encomenda -->
+
+      <!-- ============================
+           SELETOR DE TIPO
+      ============================ -->
       <div class="tipo-selector">
         <button
           class="tipo-card"
@@ -31,8 +34,11 @@
         </button>
       </div>
 
-      <!-- Formulário -->
-      <div class="form-container">
+      <!-- ============================
+           FORMULÁRIO PERSONALIZADO
+      ============================ -->
+
+      <div class="form-container" *ngIf="tipoSelecionado === 'personalizada'">
         <div class="form-card">
           <div class="form-header">
             <mat-icon>edit_note</mat-icon>
@@ -40,14 +46,12 @@
           </div>
 
           <form [formGroup]="encomendaForm" (ngSubmit)="onSubmit()">
+            
             <!-- Tipo de Produto -->
             <div class="form-group">
               <label>Tipo de Produto *</label>
               <mat-form-field appearance="outline">
-                <mat-select
-                  formControlName="tipoProduto"
-                  placeholder="Selecione o tipo"
-                >
+                <mat-select formControlName="tipoProduto" placeholder="Selecione o tipo">
                   <mat-option *ngFor="let tipo of tiposProduto" [value]="tipo">
                     {{ tipo }}
                   </mat-option>
@@ -59,42 +63,27 @@
             <div class="form-group">
               <label>Tamanho</label>
               <mat-form-field appearance="outline">
-                <mat-select
-                  formControlName="tamanho"
-                  placeholder="Selecione o tamanho"
-                >
-                  <mat-option
-                    *ngFor="let tamanho of tamanhos"
-                    [value]="tamanho"
-                  >
+                <mat-select formControlName="tamanho" placeholder="Selecione o tamanho">
+                  <mat-option *ngFor="let tamanho of tamanhos" [value]="tamanho">
                     {{ tamanho }}
                   </mat-option>
                 </mat-select>
               </mat-form-field>
             </div>
 
-            <!-- Sabor/Recheio -->
+            <!-- Sabor -->
             <div class="form-group">
               <label>Sabor/Recheio</label>
               <mat-form-field appearance="outline">
-                <input
-                  matInput
-                  formControlName="sabor"
-                  placeholder="Ex: Chocolate com morango"
-                />
+                <input matInput formControlName="sabor" placeholder="Ex: Chocolate com morango" />
               </mat-form-field>
             </div>
 
-            <!-- Decoração/Tema -->
+            <!-- Decoração -->
             <div class="form-group">
               <label>Decoração/Tema</label>
               <mat-form-field appearance="outline">
-                <textarea
-                  matInput
-                  formControlName="decoracao"
-                  rows="3"
-                  placeholder="Descreva como deseja a decoração"
-                ></textarea>
+                <textarea matInput rows="3" formControlName="decoracao"></textarea>
               </mat-form-field>
             </div>
 
@@ -102,12 +91,7 @@
             <div class="form-group">
               <label>Observações Adicionais</label>
               <mat-form-field appearance="outline">
-                <textarea
-                  matInput
-                  formControlName="observacoes"
-                  rows="4"
-                  placeholder="Alguma alergia, preferência ou informação adicional?"
-                ></textarea>
+                <textarea matInput rows="4" formControlName="observacoes"></textarea>
               </mat-form-field>
             </div>
 
@@ -119,88 +103,127 @@
                   matInput
                   [matDatepicker]="picker"
                   formControlName="dataEntrega"
-                  [min]="minDate"
                   placeholder="Selecione uma data"
                 />
-                <mat-datepicker-toggle
-                  matSuffix
-                  [for]="picker"
-                ></mat-datepicker-toggle>
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                 <mat-datepicker #picker></mat-datepicker>
               </mat-form-field>
               <small class="help-text">Prazo mínimo: 3 dias úteis</small>
             </div>
 
-            <!-- Info Box -->
-            <div class="info-box">
-              <mat-icon>info</mat-icon>
-              <div>
-                <strong
-                  >Enviaremos um orçamento personalizado em até 24 horas</strong
-                >
-                <p>Entraremos em contato para confirmar todos os detalhes</p>
-              </div>
-            </div>
-
-            <!-- Botão -->
-            <button
-              type="submit"
-              class="btn-primary btn-block"
-              [disabled]="loading"
-            >
+            <button type="submit" class="btn-primary btn-block" [disabled]="loading">
               <mat-icon>send</mat-icon>
               {{ loading ? "Enviando..." : "Enviar Encomenda" }}
             </button>
+
           </form>
         </div>
 
-        <!-- Resumo -->
+        <!-- RESUMO PERSONALIZADA -->
         <div class="resumo-card">
           <h3>Resumo da Encomenda</h3>
 
-          <div
-            class="resumo-item"
-            *ngIf="encomendaForm.get('tipoProduto')?.value"
-          >
-            <strong>Tipo:</strong>
-            <span>{{ encomendaForm.get("tipoProduto")?.value }}</span>
+          <div *ngIf="encomendaForm.get('tipoProduto')?.value">
+            <p><strong>Tipo:</strong> {{ encomendaForm.get("tipoProduto")?.value }}</p>
           </div>
 
-          <div class="resumo-item" *ngIf="encomendaForm.get('tamanho')?.value">
-            <strong>Tamanho:</strong>
-            <span>{{ encomendaForm.get("tamanho")?.value }}</span>
+          <div *ngIf="encomendaForm.get('tamanho')?.value">
+            <p><strong>Tamanho:</strong> {{ encomendaForm.get("tamanho")?.value }}</p>
           </div>
 
-          <div
-            class="resumo-item"
-            *ngIf="encomendaForm.get('dataEntrega')?.value"
-          >
-            <strong>Entrega:</strong>
-            <span>{{
-              encomendaForm.get("dataEntrega")?.value | date : "dd/MM/yyyy"
-            }}</span>
+          <div *ngIf="encomendaForm.get('dataEntrega')?.value">
+            <p><strong>Entrega:</strong> {{ encomendaForm.get("dataEntrega")?.value | date:'dd/MM/yyyy' }}</p>
           </div>
 
-          <div
-            class="resumo-empty"
-            *ngIf="!encomendaForm.get('tipoProduto')?.value"
-          >
+          <div class="resumo-empty" *ngIf="!encomendaForm.get('tipoProduto')?.value">
             <p>Preencha o formulário para ver o resumo</p>
-          </div>
-
-          <div class="contact-info">
-            <h4>Dúvidas?</h4>
-            <p>
-              <mat-icon>phone</mat-icon>
-              (11) 98765-4321
-            </p>
-            <p>
-              <mat-icon>email</mat-icon>
-              contato&#64;lourenco.com.br
-            </p>
           </div>
         </div>
       </div>
+
+     <!-- ============================
+     TELA DE CENTOS DE SALGADOS
+=============================== -->
+<div class="centos-grid" *ngIf="tipoSelecionado === 'salgados'">
+
+  <!-- ================== CARD FRITOS ================== -->
+  <div class="salgado-card">
+    <h2>Salgados Fritos</h2>
+    <p class="preco">R$ 85,00 por cento</p>
+
+    <div class="counter">
+      <button (click)="alterarQtd('fritos', -1)">-</button>
+      <span>{{ centos.fritos }} cento(s)</span>
+      <button (click)="alterarQtd('fritos', 1)">+</button>
+    </div>
+
+    <h4>Selecione os tipos (mínimo 2):</h4>
+    <div class="sabor-list">
+      <label *ngFor="let s of saboresFritos">
+        <input type="checkbox" (change)="toggleSabor('fritos', s, $event)" />
+        {{ s }}
+      </label>
     </div>
   </div>
+
+  <!-- ================== CARD ASSADOS ================== -->
+  <div class="salgado-card">
+    <h2>Salgados Assados</h2>
+    <p class="preco">R$ 95,00 por cento</p>
+
+    <div class="counter">
+      <button (click)="alterarQtd('assados', -1)">-</button>
+      <span>{{ centos.assados }} cento(s)</span>
+      <button (click)="alterarQtd('assados', 1)">+</button>
+    </div>
+
+    <h4>Selecione os tipos (mínimo 2):</h4>
+    <div class="sabor-list">
+      <label *ngFor="let s of saboresAssados">
+        <input type="checkbox" (change)="toggleSabor('assados', s, $event)" />
+        {{ s }}
+      </label>
+    </div>
+  </div>
+
+  <!-- ================== CARD RESUMO (COLUNA DIREITA) ================== -->
+  <div class="resumo-card">
+    <h3>Resumo da Encomenda</h3>
+
+    <p><strong>Fritos:</strong> {{ centos.fritos }} cento(s)</p>
+    <p><strong>Assados:</strong> {{ centos.assados }} cento(s)</p>
+    <p><strong>Total:</strong> {{ centos.fritos + centos.assados }} cento(s)</p>
+
+    <p class="valor"><strong>Valor Estimado:</strong>  
+      R$ {{ calcularValorTotal() | number:'1.2-2' }}
+    </p>
+
+    <mat-form-field appearance="outline">
+      <input 
+        matInput 
+        [matDatepicker]="pickerS"
+        placeholder="Data de entrega"
+        (dateChange)="dataEntregaSalg = $event.value"
+      />
+      <mat-datepicker-toggle matSuffix [for]="pickerS"></mat-datepicker-toggle>
+      <mat-datepicker #pickerS></mat-datepicker>
+    </mat-form-field>
+
+    <!-- CAMPO DE OBSERVAÇÕES -->
+    <mat-form-field appearance="outline">
+      <textarea 
+        matInput 
+        rows="3"
+        placeholder="Observações adicionais"
+        [(ngModel)]="obsSalgados">
+      </textarea>
+    </mat-form-field>
+
+    <button class="btn-primary btn-block" (click)="onSubmit()">
+      Enviar Encomenda
+    </button>
+
+    <small class="info">Entraremos em contato para confirmar.</small>
+  </div>
+
 </div>

@@ -136,23 +136,26 @@ export class EncomendasAdminComponent implements OnInit {
     }
   }
 
-  atualizarStatus(encomenda: Encomenda, novoStatus: StatusEncomenda) {
-    this.http.patch(`${environment.apiUrl}/encomendas/${encomenda.id}/status`, { status: novoStatus })
-      .subscribe({
-        next: () => {
-          const index = this.encomendas.findIndex(e => e.id === encomenda.id);
-          if (index !== -1) {
-            this.encomendas[index].status = novoStatus;
-            this.aplicarFiltro(this.filtroAtual);
-          }
-          this.snackBar.open('Status atualizado com sucesso', 'OK', { duration: 3000 });
-        },
-        error: (err) => {
-          console.error('Erro ao atualizar status:', err);
-          this.snackBar.open('Erro ao atualizar status', 'OK', { duration: 3000 });
-        }
-      });
-  }
+ atualizarStatus(encomenda: Encomenda, novoStatus: StatusEncomenda) {
+  const token = localStorage.getItem('token');
+
+  this.http.patch(
+    `${environment.apiUrl}/encomendas/${encomenda.id}/status`,
+    { status: novoStatus },
+    { headers: { Authorization: `Bearer ${token}` } }
+  )
+  .subscribe({
+    next: () => {
+      this.snackBar.open('Status atualizado com sucesso', 'OK', { duration: 3000 });
+      encomenda.status = novoStatus;
+      this.aplicarFiltro(this.filtroAtual);
+    },
+    error: (err) => {
+      console.error('Erro ao atualizar status:', err);
+      this.snackBar.open('Erro ao atualizar status', 'OK', { duration: 3000 });
+    }
+  });
+}
 
   getStatusClass(status: string): string {
     const statusMap: any = {

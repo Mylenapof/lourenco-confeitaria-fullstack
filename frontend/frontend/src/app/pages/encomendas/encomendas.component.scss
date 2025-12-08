@@ -23,7 +23,7 @@
     padding: 50px 0;
   }
 
-  // Tipo Selector
+  /* Seleção entre Personalizada / Salgados */
   .tipo-selector {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -71,7 +71,9 @@
     }
   }
 
-  // Form Container
+  /* =============================
+     FORMULÁRIO PERSONALIZADO
+  ============================== */
   .form-container {
     display: grid;
     grid-template-columns: 1fr 400px;
@@ -91,8 +93,6 @@
 
         mat-icon {
           font-size: 32px;
-          width: 32px;
-          height: 32px;
           color: var(--primary-pink);
         }
 
@@ -119,37 +119,9 @@
         }
 
         .help-text {
-          display: block;
           color: var(--text-light);
           font-size: 13px;
           margin-top: 4px;
-        }
-      }
-
-      .info-box {
-        background: #E3F2FD;
-        border-left: 4px solid #2196F3;
-        padding: 15px;
-        border-radius: 8px;
-        display: flex;
-        gap: 12px;
-        margin: 25px 0;
-
-        mat-icon {
-          color: #2196F3;
-          flex-shrink: 0;
-        }
-
-        strong {
-          display: block;
-          color: var(--text-dark);
-          margin-bottom: 4px;
-        }
-
-        p {
-          color: var(--text-light);
-          font-size: 14px;
-          margin: 0;
         }
       }
 
@@ -157,10 +129,6 @@
         width: 100%;
         padding: 16px;
         font-size: 18px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
       }
     }
 
@@ -180,59 +148,134 @@
         margin-bottom: 20px;
       }
 
-      .resumo-item {
-        display: flex;
-        justify-content: space-between;
-        padding: 12px 0;
-        border-bottom: 1px solid #F0F0F0;
-
-        strong {
-          color: var(--text-dark);
-        }
-
-        span {
-          color: var(--text-light);
-        }
-      }
-
       .resumo-empty {
         padding: 40px 20px;
         text-align: center;
         color: var(--text-light);
       }
-
-      .contact-info {
-        margin-top: 30px;
-        padding-top: 20px;
-        border-top: 2px solid #F0F0F0;
-
-        h4 {
-          font-size: 16px;
-          font-weight: 600;
-          color: var(--text-dark);
-          margin-bottom: 12px;
-        }
-
-        p {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          color: var(--text-light);
-          font-size: 14px;
-          margin-bottom: 8px;
-
-          mat-icon {
-            font-size: 18px;
-            width: 18px;
-            height: 18px;
-            color: var(--primary-pink);
-          }
-        }
-      }
     }
   }
 }
 
+/* =======================================================
+   LAYOUT NOVO — CENTOS DE SALGADOS (3 COLUNAS)
+========================================================= */
+.centos-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 350px;
+  gap: 25px;
+  margin-top: 30px;
+}
+
+/* CARD DE SALGADOS (FRITOS E ASSADOS) */
+.salgado-card {
+  background: white;
+  padding: 25px;
+  border-radius: 16px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+
+  h2 {
+    color: var(--primary-pink);
+    font-weight: 700;
+    margin-bottom: 5px;
+  }
+
+  .preco {
+    color: var(--text-light);
+    margin-bottom: 20px;
+  }
+
+  .counter {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+
+    button {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: none;
+      font-size: 22px;
+      font-weight: bold;
+      cursor: pointer;
+      background: var(--light-pink);
+      color: var(--primary-pink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    span {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+  }
+
+  h4 {
+    margin: 15px 0 10px;
+    font-weight: 600;
+  }
+
+  .sabor-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+
+    label {
+      display: flex;
+      gap: 6px;
+      font-size: 15px;
+    }
+  }
+}
+
+/* CARD DO RESUMO — COLUNA DIREITA */
+.resumo-card {
+  background: white;
+  padding: 25px;
+  border-radius: 16px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+  height: fit-content;
+  position: sticky;
+  top: 100px;
+
+  h3 {
+    color: var(--primary-pink);
+    font-weight: 700;
+    margin-bottom: 15px;
+  }
+
+  p {
+    margin: 8px 0;
+  }
+
+  .valor {
+    margin-top: 12px;
+    margin-bottom: 20px;
+    color: var(--primary-pink);
+    font-weight: 700;
+    font-size: 18px;
+  }
+
+  mat-form-field {
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .btn-block {
+    margin-top: 15px;
+  }
+
+  .info {
+    text-align: center;
+    margin-top: 10px;
+    color: var(--text-light);
+  }
+}
+
+/* RESPONSIVO */
 @media (max-width: 1024px) {
   .form-container {
     grid-template-columns: 1fr !important;
@@ -243,8 +286,49 @@
   }
 }
 
+@media (max-width: 900px) {
+  .centos-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .resumo-card {
+    position: static;
+  }
+}
+
 @media (max-width: 768px) {
   .tipo-selector {
     grid-template-columns: 1fr !important;
+  }
+}
+
+/* BOTÃO ROSA MAIS FORTE */
+.btn-primary {
+  background: var(--primary-pink);
+  color: white !important;
+  font-weight: 700 !important;
+  border-radius: 12px;
+  padding: 14px;
+  font-size: 16px;
+  text-shadow: 0px 0px 3px rgba(0,0,0,0.2);
+}
+
+.sabor-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+
+  label {
+    display: flex;
+    flex-direction: row;
+    align-items: center;      /* alinha o texto ao checkbox */
+    gap: 8px;
+    font-size: 15px;
+    white-space: nowrap;      /* impede que o texto quebre linha */
+  }
+
+  input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
   }
 }
